@@ -7,32 +7,33 @@ import {
   Input,
   Stack,
   useColorModeValue,
-  HStack,
-  Avatar,
-  AvatarBadge,
-  IconButton,
-  Center,
 } from "@chakra-ui/react";
-import { SmallCloseIcon } from "@chakra-ui/icons";
 import SidebarWithHeader from "./components/navbar";
 import { dataState } from "../../context";
+import Loader from "./components/Loader";
+import { useEffect } from "react";
 
 export default function UserProfileEdit() {
-  const { user } = dataState()
+  const { user } = dataState();
 
+  useEffect(() => {
+    if (!user) {
+      window.location.href = "/";
+    }
+  }, []);
   const userData = user.user;
   console.log("log from profile -->", user);
 
   return (
     <SidebarWithHeader>
       {userData == null ? (
-        <p>Loading...</p>
+        <Loader />
       ) : (
         <Flex
           minH={"100vh"}
           align={"center"}
           justify={"center"}
-          bg={useColorModeValue("gray.50", "gray.800")}
+          bg={useColorModeValue("gray.50", "gray.900")}
         >
           <Stack
             spacing={4}
@@ -47,32 +48,11 @@ export default function UserProfileEdit() {
             <Heading lineHeight={1.1} fontSize={{ base: "2xl", sm: "3xl" }}>
               User Profile Edit
             </Heading>
-            <FormControl id="userName">
-              <FormLabel>User Icon</FormLabel>
-              <Stack direction={["column", "row"]} spacing={6}>
-                <Center>
-                  <Avatar size="xl" src="https://bit.ly/sage-adebayo">
-                    <AvatarBadge
-                      as={IconButton}
-                      size="sm"
-                      rounded="full"
-                      top="-10px"
-                      colorScheme="red"
-                      aria-label="remove Image"
-                      icon={<SmallCloseIcon />}
-                    />
-                  </Avatar>
-                </Center>
-                <Center w="full">
-                  <Button w="full">Change Icon</Button>
-                </Center>
-              </Stack>
-            </FormControl>
             <FormControl id="userName" isRequired>
               <FormLabel>User name</FormLabel>
               <Input
                 placeholder="UserName"
-                value={userData.name&&userData.name}
+                value={userData.name && userData.name}
                 _placeholder={{ color: "gray.500" }}
                 type="text"
               />
@@ -81,7 +61,7 @@ export default function UserProfileEdit() {
               <FormLabel>Email address</FormLabel>
               <Input
                 placeholder="your-email@example.com"
-                value={userData.email&&userData.email}
+                value={userData.email && userData.email}
                 _placeholder={{ color: "gray.500" }}
                 type="email"
               />

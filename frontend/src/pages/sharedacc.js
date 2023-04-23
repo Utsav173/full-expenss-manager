@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import SidebarWithHeader from "./components/navbar";
-import { Flex, Heading, Select, Stack } from "@chakra-ui/react";
+import React from "react";
+import { Flex, Heading, Stack } from "@chakra-ui/react";
 import MainTemplate from "./components/maintemplate";
-import axios from "axios";
 import { dataState } from "../../context";
 import {
   Testimonial,
@@ -11,12 +9,13 @@ import {
   TestimonialText,
 } from "./homepage";
 import Link from "next/link";
+import Loader from "./components/Loader";
 
 const sharedacc = () => {
   const { data, loading } = dataState();
-  console.log(data);
+
   return loading == true ? (
-    <p>Loading...</p>
+    <Loader/>
   ) : (
     <MainTemplate>
       <Flex gap={2} direction={"column"}>

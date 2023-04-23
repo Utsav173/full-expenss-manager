@@ -10,15 +10,15 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
   Stack,
   VStack,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { dataState } from "../../../context";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { EditIcon } from "@chakra-ui/icons";
-import { useFormik } from "formik";
 
 function UpdateTransactions({ transId, fetchSignleAcc }) {
   const [updateTransData, setUpdateTransData] = useState({});
@@ -27,11 +27,11 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
   const [amount, setAmount] = useState(updateTransData.amount);
   const [transfer, setTransfer] = useState(updateTransData.transfer);
   const [category, setCategory] = useState(updateTransData.category);
-  const [isUpdatedTrans, setIsUpdatedTrans] = useState(false);
+  const toast = useToast();
+  const [catlist, setCatlist] = useState();
 
   const updateTransactionGet = () => {
     onOpen();
-    setIsUpdatedTrans(true);
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     const options = {
@@ -44,6 +44,7 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
     axios
       .request(options)
       .then((response) => {
+        console.log("&^$*&^---> ", response.data.data);
         setUpdateTransData(response.data.data);
         if (isOpen) {
           onClose();
@@ -66,10 +67,10 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
         Authorization: `Bearer ${token}`,
       },
       data: {
-        text:text,
-        amount:amount,
-        category:category,
-        transfer:transfer
+        text: text,
+        amount: amount,
+        category: category,
+        transfer: transfer,
       },
     };
     axios
@@ -77,25 +78,52 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
       .then((response) => {
         console.log("log inside update--->", response);
         if (response.status == 200) {
-          setIsUpdatedTrans(false);
           fetchSignleAcc();
+          toast({
+            title: "Transaction Updated",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+          });
           onClose();
         }
       })
       .catch((error) => {
         console.log(error);
+        toast({
+          title: `Transaction Not Updated, ${error.response.data.message}`,
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+        });
       });
     onClose();
   };
+  useEffect(() => {
+    axios
+      .get("http://localhost:1337/category")
+      .then((res) => {
+        setCatlist(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
- return (
+  return (
     <>
-      <EditIcon onClick={updateTransactionGet} color={"blue.400"} />
+      <Button
+        onClick={updateTransactionGet}
+        color={"blue.400"}
+        leftIcon={<EditIcon />}
+      >
+        Edit
+      </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>Update Transaction</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Stack direction={"column"}>
@@ -128,12 +156,22 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
               </FormControl>
               <FormControl isRequired>
                 <FormLabel>category</FormLabel>
-                <Input
-                  defaultValue={updateTransData.category}
+
+                <Select
                   placeholder="category"
                   onChange={(e) => setCategory(e.target.value)}
-                  required
-                />
+                >
+                  <option
+                    value={updateTransData.category && updateTransData.category.id}
+                    selected
+                  >
+                    {updateTransData.category && updateTransData.category.name}
+                  </option>
+                  {catlist &&
+                    catlist.map((v) => {
+                      return <option value={v.id}>{v.name}</option>;
+                    })}
+                </Select>
               </FormControl>
             </Stack>
           </ModalBody>

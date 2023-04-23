@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   IconButton,
   Avatar,
@@ -18,6 +18,13 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Button,
+  useColorMode,
+  useToast,
+  FormControl,
+  InputGroup,
+  InputLeftElement,
+  Input,
 } from "@chakra-ui/react";
 import {
   FiHome,
@@ -26,18 +33,18 @@ import {
   FiMenu,
   FiBell,
   FiChevronDown,
+  FiSearch,
 } from "react-icons/fi";
-import useLocalStorage from "../../../utils";
 import { useRouter } from "next/router";
 import { dataState } from "../../../context";
-import Login from "../login";
 import axios from "axios";
 import Link from "next/link";
+import { InfoOutlineIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 
 const LinkItems = [
-  { name: "Home", icon: FiHome, href: "/" },
+  { name: "Home", icon: FiHome, href: "/homepage" },
   { name: "Shared account", icon: FiCompass, href: "/sharedacc" },
-  { name: "Settings", icon: FiSettings, href: "/profile" },
+  { name: "Profile", icon: InfoOutlineIcon, href: "/profile" },
 ];
 
 export default function SidebarWithHeader({ children }) {
@@ -134,10 +141,12 @@ const NavItem = ({ icon, children, ...rest }) => {
 };
 
 const MobileNav = ({ onOpen, ...rest }) => {
-  const { user, setUser } = dataState();
+  const { user, setUser,searchResult, setSearchResult } = dataState();
+  const { colorMode, toggleColorMode } = useColorMode();
+  const toast = useToast();
   const router = useRouter();
   const handleLogout = () => {
-    const { token } = user;
+    const { token } = JSON.parse(localStorage.getItem("userInfo"));
     console.log(token);
     const options = {
       method: "GET",
@@ -151,10 +160,51 @@ const MobileNav = ({ onOpen, ...rest }) => {
       .then((response) => {
         console.log(response);
         setUser(null);
+        toast({
+          title: "Logged out successfully",
+          status: "success",
+          duration: 1000,
+        });
         return router.push("/");
       })
       .catch((error) => {
         console.log(error);
+        toast({
+          title: `Something went wrong ${error.response.data.message}`,
+          status: "error",
+          duration: 1000,
+        });
+      });
+  };
+  const handleSearch = (searchData) => {
+
+    if (searchData === "") {
+      return setSearchResult(null);
+    }
+    const { token } = JSON.parse(localStorage.getItem("userInfo"));
+    console.log(token);
+    const options = {
+      method: "POST",
+      url: "http://localhost:1337/searchTransaction",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        searchTerm: searchData,
+      },
+    };
+    axios
+      .request(options)
+      .then((response) => {
+        setSearchResult(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: `Something went wrong ${error.response.data.message}`,
+          status: "error",
+          duration: 1000,
+        });
       });
   };
 
@@ -178,22 +228,25 @@ const MobileNav = ({ onOpen, ...rest }) => {
         icon={<FiMenu />}
       />
 
-      <Text
-        display={{ base: "flex", md: "none" }}
-        fontSize="2xl"
-        fontFamily="monospace"
-        fontWeight="bold"
-      >
-        Logo
-      </Text>
-
-      <HStack spacing={{ base: "0", md: "6" }}>
-        <IconButton
-          size="lg"
-          variant="ghost"
-          aria-label="open menu"
-          icon={<FiBell />}
-        />
+      <HStack spacing={{ base: "3", md: "6" }}>
+        
+        <FormControl>
+          <InputGroup>
+            <InputLeftElement pointerEvents="none" children={<FiSearch />} />
+            <Input
+              placeholder="Search"
+              onChange={(e) => {
+                handleSearch(e.target.value);
+              }}
+              _placeholder={{
+                color: "gray.400",
+              }}
+            />
+          </InputGroup>
+        </FormControl>
+        <Button onClick={toggleColorMode}>
+          {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+        </Button>
         <Flex alignItems={"center"}>
           <Menu>
             <MenuButton
@@ -202,12 +255,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
               _focus={{ boxShadow: "none" }}
             >
               <HStack>
-                <Avatar
-                  size={"sm"}
-                  src={
-                    "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                  }
-                />
+                <Avatar src="https://bit.ly/broken-link" />
                 <VStack
                   display={{ base: "none", md: "flex" }}
                   alignItems="flex-start"

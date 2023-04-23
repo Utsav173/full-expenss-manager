@@ -3,6 +3,7 @@ import SidebarWithHeader from "./components/navbar";
 import { Flex, Select, Stack } from "@chakra-ui/react";
 import MainTemplate from "./components/maintemplate";
 import axios from "axios";
+import Loader from "./components/Loader";
 
 const shareaccount = () => {
   const [shareList, setShareList] = useState();
@@ -27,6 +28,12 @@ const shareaccount = () => {
       })
       .catch((error) => {
         console.log(error);
+        toast({
+          title: error.response.data.message,
+          variant: "left-accent",
+          status: "error",
+          duration: 2000,
+        })
       });
   };
 
@@ -35,7 +42,7 @@ const shareaccount = () => {
   }, []);
 
   return loading == true ? (
-    <p>Loading...</p>
+    <Loader/>
   ) : (
     <MainTemplate>
       <Flex>
