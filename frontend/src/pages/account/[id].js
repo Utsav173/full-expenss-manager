@@ -357,9 +357,10 @@ const account = () => {
             )}
           <AddTranjection accId={id} fetchSignleAcc={fetchSignleAcc} />
         </Stack>
-        <Stack
-          direction={{ lg: "row", sm: "column" }}
+        <Flex
+          flexDirection={{ base: "column", md: "row" }}
           spacing={5}
+          flexWrap={"wrap"}
           my={3}
           justifyContent={"space-evenly"}
           alignItems={"center"}
@@ -405,7 +406,7 @@ const account = () => {
               {transData.expensePercentageChange}%
             </StatHelpText>
           </Stat>
-        </Stack>
+        </Flex>
         {transData.data.length > 0 && (
           <Stack spacing={"8"}>
             <Button
