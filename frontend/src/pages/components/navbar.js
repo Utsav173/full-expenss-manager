@@ -150,7 +150,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "GET",
-      url: "http://localhost:1337/logout",
+      url: "https://expenss-api-sample.onrender.com/logout",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -185,7 +185,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "POST",
-      url: "http://localhost:1337/searchTransaction",
+      url: "https://expenss-api-sample.onrender.com/searchTransaction",
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -82,7 +82,7 @@ const account = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `http://localhost:1337/editAccount/${id}`,
+      url: `https://expenss-api-sample.onrender.com/editAccount/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -109,7 +109,7 @@ const account = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `http://localhost:1337/viewTransaction/${id}`,
+      url: `https://expenss-api-sample.onrender.com/viewTransaction/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -165,7 +165,7 @@ const account = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `http://localhost:1337/share/${id}`,
+      url: `https://expenss-api-sample.onrender.com/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -193,7 +193,7 @@ const account = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "POST",
-      url: `http://localhost:1337/account/share/${id}`,
+      url: `https://expenss-api-sample.onrender.com/account/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -232,7 +232,7 @@ const account = () => {
     const { token } = JSON.parse(user);
 
     axios
-      .delete(`http://localhost:1337/rmTransaction/${tId}`, {
+      .delete(`https://expenss-api-sample.onrender.com/rmTransaction/${tId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
