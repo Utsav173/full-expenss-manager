@@ -22,12 +22,12 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { dataState } from "../../context";
-import MainTemplate from "./components/maintemplate";
 import axios from "axios";
 import Link from "next/link";
-import UpdateAcc from "./components/UpdateAcc";
+import UpdateAcc from "../../components/UpdateAcc";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import Loader from "./components/Loader";
+import Loader from "../../components/Loader";
+import MainTemplate from "../../components/maintemplate";
 
 export const Testimonial = ({ children }) => {
   return <Box>{children}</Box>;

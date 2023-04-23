@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
-import { dataState } from "../../../context";
+import { dataState } from "../context";
 
 const UpdateAcc = ({ accId }) => {
   const [name, setName] = useState();

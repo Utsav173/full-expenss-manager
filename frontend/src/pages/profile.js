@@ -8,9 +8,9 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react";
-import SidebarWithHeader from "./components/navbar";
+import SidebarWithHeader from "../../components/navbar";
 import { dataState } from "../../context";
-import Loader from "./components/Loader";
+import Loader from "../../components/Loader";
 import { useEffect } from "react";
 
 export default function UserProfileEdit() {

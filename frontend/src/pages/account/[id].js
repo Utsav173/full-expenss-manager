@@ -32,7 +32,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import MainTemplate from "../components/maintemplate";
+import MainTemplate from "../../../components/maintemplate";
 import { useRouter } from "next/router";
 import { Testimonial, TestimonialContent, TestimonialText } from "../homepage";
 import {
@@ -43,12 +43,12 @@ import {
   RepeatClockIcon,
   RepeatIcon,
 } from "@chakra-ui/icons";
-import AddTranjection from "../components/AddTranjection";
-import UpdateTransactions from "../components/UpdateTrans";
+import AddTranjection from "../../../components/AddTranjection";
+import UpdateTransactions from "../../../components/UpdateTrans";
 import { dataState } from "../../../context";
-import BalanceChart from "../components/BalanceChart";
-import Loader from "../components/Loader";
-import TransactionChart from "../components/TransactionChart";
+import BalanceChart from "../../../components/BalanceChart";
+import Loader from "../../../components/Loader";
+import TransactionChart from "../../../components/TransactionChart";
 
 const account = () => {
   const router = useRouter();
@@ -61,7 +61,7 @@ const account = () => {
   const [chartData, setChartData] = useState([]);
   const [intChartData, setIntChartData] = useState([]);
   const [intLabelData, setIntLabelData] = useState([]);
-  const [chartLable, setChartLable] = useState([]);
+  const [chartLable, setChartLable] = useState(["first","seond"]);
   const [email, setEmail] = useState("");
   const [sampleAccData, setSampleAccData] = useState();
   const [intLoading, setIntLoading] = useState(true);
@@ -116,12 +116,12 @@ const account = () => {
     };
     axios
       .request(options)
-      .then((response) => {
+      .then(async(response) => {
         setTransData(response.data);
-        const newArr = response.data.data.map((element) => {
+        const newArr = await response.data.data.map((element) => {
           return element.amount;
         });
-        const newLablelArr = response.data.data.map((element) => {
+        const newLablelArr = await response.data.data.map((element) => {
           return element.text;
         });
         setChartData(newArr);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Login from "../login";
+import Login from "../src/pages/login";
 
 const Privateroutes = ({ children }) => {
   const [user, setUser] = useState();
