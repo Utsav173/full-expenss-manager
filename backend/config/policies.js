@@ -8,7 +8,6 @@
  * https://sailsjs.com/docs/concepts/policies
  */
 
-const AccountsController = require('../api/controllers/AccountsController');
 
 module.exports.policies = {
   /***************************************************************************
