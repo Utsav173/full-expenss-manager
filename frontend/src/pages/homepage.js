@@ -106,7 +106,7 @@ const Homepage = () => {
 
     const options = {
       method: "POST",
-      url: "http://localhost:1337/addAccount",
+      url: `${process.env.ENDPOINTS}/addAccount`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -152,7 +152,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "GET",
-      url: "http://localhost:1337/logout",
+      url: `${process.env.ENDPOINTS}/logout`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -187,7 +187,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "POST",
-      url: "http://localhost:1337/searchTransaction",
+      url: `${process.env.ENDPOINTS}/searchTransaction`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

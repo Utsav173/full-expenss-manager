@@ -33,7 +33,7 @@ function AddTranjection({ accId, fetchSignleAcc }) {
     const { token } = JSON.parse(user);
     const options = {
       method: "POST",
-      url: `http://localhost:1337/addTransaction/${accId}`,
+      url: `${process.env.ENDPOINTS}/addTransaction/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -71,7 +71,7 @@ function AddTranjection({ accId, fetchSignleAcc }) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:1337/category")
+      .get(`${process.env.ENDPOINTS}/category`)
       .then((res) => {
         setCatlist(res.data);
       })

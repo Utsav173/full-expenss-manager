@@ -23,7 +23,7 @@ const AuthProvider = ({ children }) => {
 
     const options = {
       method: "GET",
-      url: "http://localhost:1337/",
+      url: `${process.env.ENDPOINTS}/`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -52,7 +52,7 @@ const AuthProvider = ({ children }) => {
 
     const options = {
       method: "POST",
-      url: "http://localhost:1337/addAccount",
+      url: "${process.env.ENDPOINTS}/addAccount",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -98,7 +98,7 @@ const AuthProvider = ({ children }) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "DELETE",
-      url: `http://localhost:1337/delAccount/${accID}`,
+      url: `${process.env.ENDPOINTS}/delAccount/${accID}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

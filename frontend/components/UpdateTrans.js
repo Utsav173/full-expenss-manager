@@ -36,7 +36,7 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `http://localhost:1337/editTransaction/${transId}`,
+      url: `${process.env.ENDPOINTS}/editTransaction/${transId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -62,7 +62,7 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
     const { token } = JSON.parse(user);
     const options = {
       method: "PUT",
-      url: `http://localhost:1337/editTransaction/${transId}`,
+      url: `${process.env.ENDPOINTS}/editTransaction/${transId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -101,7 +101,7 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
   };
   useEffect(() => {
     axios
-      .get("http://localhost:1337/category")
+      .get(`${process.env.ENDPOINTS}/category`)
       .then((res) => {
         setCatlist(res.data);
       })

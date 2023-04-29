@@ -14,7 +14,7 @@ const shareaccount = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: "http://localhost:1337/share",
+      url: `${process.env.ENDPOINTS}/share`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

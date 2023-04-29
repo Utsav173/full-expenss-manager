@@ -33,7 +33,7 @@ const Login = () => {
       password: password,
     };
     axios
-      .post("http://localhost:1337/login", config)
+      .post(`${process.env.ENDPOINTS}/login`, config)
       .then((response) => {
         console.log(response);
         setUser(response.data.data);

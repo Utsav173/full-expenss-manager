@@ -82,7 +82,7 @@ const account = (props) => {
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     axios
-      .get("http://localhost:1337/editProfile", {
+      .get(`${process.env.ENDPOINTS}/editProfile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -104,7 +104,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `http://localhost:1337/editAccount/${id}`,
+      url: `${process.env.ENDPOINTS}/editAccount/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -131,7 +131,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `http://localhost:1337/viewTransaction/${id}`,
+      url: `${process.env.ENDPOINTS}/viewTransaction/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -188,7 +188,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `http://localhost:1337/share/${id}`,
+      url: `${process.env.ENDPOINTS}/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -216,7 +216,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "POST",
-      url: `http://localhost:1337/account/share/${id}`,
+      url: `${process.env.ENDPOINTS}/account/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -255,7 +255,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
 
     axios
-      .delete(`http://localhost:1337/rmTransaction/${tId}`, {
+      .delete(`${process.env.ENDPOINTS}/rmTransaction/${tId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -283,7 +283,7 @@ const account = (props) => {
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     axios
-      .delete(`http://localhost:1337/deleteAllTransaction/${id}`, {
+      .delete(`${process.env.ENDPOINTS}/deleteAllTransaction/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

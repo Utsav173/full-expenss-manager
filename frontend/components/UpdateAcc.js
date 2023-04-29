@@ -32,7 +32,7 @@ const UpdateAcc = ({ accId }) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `http://localhost:1337/editAccount/${accId}`,
+      url: `${process.env.ENDPOINTS}/editAccount/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -52,7 +52,7 @@ const UpdateAcc = ({ accId }) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "PUT",
-      url: `http://localhost:1337/editAccount/${accId}`,
+      url: `${process.env.ENDPOINTS}/editAccount/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
