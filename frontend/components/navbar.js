@@ -149,7 +149,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
   const router = useRouter();
   const handleLogout = () => {
     const { token } = JSON.parse(localStorage.getItem("userInfo"));
-    console.log(token);
+    // console.log(token);
     const options = {
       method: "GET",
       url: `https://expenss-api-sample.onrender.com/logout`,
@@ -184,7 +184,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
       return setSearchResult(null);
     }
     const { token } = JSON.parse(localStorage.getItem("userInfo"));
-    console.log(token);
+    // console.log(token);
     const options = {
       method: "POST",
       url: `https://expenss-api-sample.onrender.com/searchTransaction`,

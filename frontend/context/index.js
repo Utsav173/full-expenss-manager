@@ -31,7 +31,7 @@ const AuthProvider = ({ children }) => {
     axios
       .request(options)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setData(response.data);
         setLoading(false);
       })
@@ -63,7 +63,7 @@ const AuthProvider = ({ children }) => {
     await axios
       .request(options)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response.status == 201) {
           setRefresh(!refresh);
           toast({
@@ -93,7 +93,7 @@ const AuthProvider = ({ children }) => {
   };
 
   const handleDeleteAcc = async (accID) => {
-    console.log("acc id -->", accID);
+    // console.log("acc id -->", accID);
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     const options = {
@@ -106,7 +106,7 @@ const AuthProvider = ({ children }) => {
     await axios
       .request(options)
       .then((response) => {
-        console.log(response.data.data);
+        // console.log(response.data.data);
         if (response.status == 200) {
           setRefresh(!refresh);
           toast({

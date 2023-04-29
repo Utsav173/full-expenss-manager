@@ -25,7 +25,7 @@ module.exports = {
   getTrsansaction: async (req, res) => {
     try {
       const accountId = req.params.id;
-      console.log(accountId);
+      // console.log(accountId);
       if (!accountId) {
         return res.status(404).json({ message: "account id required" });
       }
@@ -136,11 +136,11 @@ module.exports = {
       });
 
       const cuurentBalanceData = await Accounts.findOne({ id: tID });
-      console.log("====================================");
-      console.log(cuurentBalanceData);
-      console.log("====================================");
+      // console.log("====================================");
+      // // console.log(cuurentBalanceData);
+      // console.log("====================================");
       if (amount > 0) {
-        console.log("invome update");
+        // console.log("invome update");
         const incomeChange = calculatePercentageChange(
           cuurentIncome,
           cuurentBalanceData.previousIncome
@@ -189,9 +189,9 @@ module.exports = {
       await Transaction.createEach(data);
 
       const cuurentBalanceData = await Accounts.findOne({ id: tID });
-      console.log("====================================");
-      console.log(cuurentBalanceData);
-      console.log("====================================");
+      // console.log("====================================");
+      // console.log(cuurentBalanceData);
+      // console.log("====================================");
       data.forEach(async (element) => {
         const currentIcomeExp = await Transaction.find({
           account: tID,
@@ -226,9 +226,9 @@ module.exports = {
             cuurentBalanceData.previousExpenses
           );
 
-          console.log("====================================");
-          console.log("expense update", expensesChange);
-          console.log("====================================");
+          // console.log("====================================");
+          // console.log("expense update", expensesChange);
+          // console.log("====================================");
           await Accounts.updateOne({ id: tID }).set({
             previousExpenses: currentExpens,
             balance: totalBalance,

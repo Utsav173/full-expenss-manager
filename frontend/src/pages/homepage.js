@@ -119,7 +119,7 @@ const Homepage = () => {
     await axios
       .request(options)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response.status == 201) {
           setRefresh(!refresh);
           setAccname("");

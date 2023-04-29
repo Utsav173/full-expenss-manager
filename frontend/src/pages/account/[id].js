@@ -118,7 +118,7 @@ const account = (props) => {
     axios
       .request(options)
       .then((response) => {
-        console.log(response.data.data);
+        // console.log(response.data.data);
         return setSampleAccData(response.data.data);
       })
       .catch((error) => {
@@ -145,7 +145,7 @@ const account = (props) => {
     axios
       .request(options)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setTransData(response.data);
         const newArr = response.data.data.map((element) => {
           return element.amount;
@@ -202,7 +202,7 @@ const account = (props) => {
     axios
       .request(options)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         setShareList(response.data);
         setLoading(false);
       })
@@ -217,7 +217,7 @@ const account = (props) => {
       });
   };
   const handleShareToUser = () => {
-    console.log("email to send---> ", email);
+    // console.log("email to send---> ", email);
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     const options = {
@@ -233,7 +233,7 @@ const account = (props) => {
     axios
       .request(options)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response.status == 200) {
           onClose();
           toast({

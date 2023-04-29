@@ -35,7 +35,7 @@ const Login = () => {
     axios
       .post(`https://expenss-api-sample.onrender.com/login`, config)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         setUser(response.data.data);
         route.push("/homepage");
         toast({
