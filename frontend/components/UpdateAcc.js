@@ -32,7 +32,7 @@ const UpdateAcc = ({ accId }) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/editAccount/${accId}`,
+      url: `https://expenss-api-sample.onrender.com/editAccount/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -52,7 +52,7 @@ const UpdateAcc = ({ accId }) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "PUT",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/editAccount/${accId}`,
+      url: `https://expenss-api-sample.onrender.com/editAccount/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

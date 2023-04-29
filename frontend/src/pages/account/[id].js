@@ -82,7 +82,7 @@ const account = (props) => {
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     axios
-      .get(`${process.env.NEXT_PUBLIC_ENDPOINTS}/editProfile`, {
+      .get(`https://expenss-api-sample.onrender.com/editProfile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -104,7 +104,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/editAccount/${id}`,
+      url: `https://expenss-api-sample.onrender.com/editAccount/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -131,7 +131,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/viewTransaction/${id}`,
+      url: `https://expenss-api-sample.onrender.com/viewTransaction/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -188,7 +188,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/share/${id}`,
+      url: `https://expenss-api-sample.onrender.com/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -216,7 +216,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/account/share/${id}`,
+      url: `https://expenss-api-sample.onrender.com/account/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -255,7 +255,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
 
     axios
-      .delete(`${process.env.NEXT_PUBLIC_ENDPOINTS}/rmTransaction/${tId}`, {
+      .delete(`https://expenss-api-sample.onrender.com/rmTransaction/${tId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -283,7 +283,7 @@ const account = (props) => {
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     axios
-      .delete(`${process.env.NEXT_PUBLIC_ENDPOINTS}/deleteAllTransaction/${id}`, {
+      .delete(`https://expenss-api-sample.onrender.com/deleteAllTransaction/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

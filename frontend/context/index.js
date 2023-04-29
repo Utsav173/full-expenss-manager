@@ -23,7 +23,7 @@ const AuthProvider = ({ children }) => {
 
     const options = {
       method: "GET",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/`,
+      url: `https://expenss-api-sample.onrender.com/`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -52,7 +52,7 @@ const AuthProvider = ({ children }) => {
 
     const options = {
       method: "POST",
-      url: "${process.env.NEXT_PUBLIC_ENDPOINTS}/addAccount",
+      url: "https://expenss-api-sample.onrender.com/addAccount",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -98,7 +98,7 @@ const AuthProvider = ({ children }) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "DELETE",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/delAccount/${accID}`,
+      url: `https://expenss-api-sample.onrender.com/delAccount/${accID}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

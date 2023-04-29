@@ -26,7 +26,7 @@ export default function UserProfileEdit() {
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     axios
-      .get(`${process.env.NEXT_PUBLIC_ENDPOINTS}/editProfile`, {
+      .get(`https://expenss-api-sample.onrender.com/editProfile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -50,7 +50,7 @@ export default function UserProfileEdit() {
     const { token } = JSON.parse(user);
     const options = {
       method: "PUT",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/editProfile`,
+      url: `https://expenss-api-sample.onrender.com/editProfile`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

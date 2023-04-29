@@ -14,7 +14,7 @@ const shareaccount = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/share`,
+      url: `https://expenss-api-sample.onrender.com/share`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

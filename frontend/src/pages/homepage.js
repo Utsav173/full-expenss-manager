@@ -106,7 +106,7 @@ const Homepage = () => {
 
     const options = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/addAccount`,
+      url: `https://expenss-api-sample.onrender.com/addAccount`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

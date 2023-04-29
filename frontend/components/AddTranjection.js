@@ -33,7 +33,7 @@ function AddTranjection({ accId, fetchSignleAcc }) {
     const { token } = JSON.parse(user);
     const options = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/addTransaction/${accId}`,
+      url: `https://expenss-api-sample.onrender.com/addTransaction/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -71,7 +71,7 @@ function AddTranjection({ accId, fetchSignleAcc }) {
 
   useEffect(() => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_ENDPOINTS}/category`)
+      .get(`https://expenss-api-sample.onrender.com/category`)
       .then((res) => {
         setCatlist(res.data);
       })

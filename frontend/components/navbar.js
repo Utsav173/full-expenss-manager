@@ -152,7 +152,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "GET",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/logout`,
+      url: `https://expenss-api-sample.onrender.com/logout`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -187,7 +187,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "POST",
-      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/searchTransaction`,
+      url: `https://expenss-api-sample.onrender.com/searchTransaction`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
