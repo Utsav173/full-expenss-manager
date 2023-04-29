@@ -71,8 +71,7 @@ module.exports = {
       *                                                                           *
       ****************************************************************************/
       // ssl: { rejectUnauthorized: true },
-      adapter: 'sails-mongo',
-      url: 'mongodb://utsavkh:675915xiCD4QCw3Vqt63f@15.206.7.200:28017/utsavkh?authMechanism=DEFAULT&authSource=admin'
+
     },
 
   },
@@ -149,9 +148,11 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
     cors: {
-      // allowOrigins: [
-      //   'https://example.com',
-      // ]
+      allowOrigins: [
+        'https://example.com',
+        'http://localhost:3000',
+        'http://localhost:3001',
+      ]
     },
 
   },
@@ -269,6 +270,7 @@ module.exports = {
     onlyAllowOrigins: [
       'https://example.com',
       'http://localhost:3000',
+      'http://localhost:3001',
     ],
 
 
@@ -356,7 +358,7 @@ module.exports = {
   * this, just try deploying without setting it and see if it works.)       *
   *                                                                         *
   ***************************************************************************/
-  // port: 80,
+  port: process.env.PORT || 1337,
 
 
 
