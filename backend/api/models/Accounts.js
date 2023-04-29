@@ -17,6 +17,11 @@ module.exports = {
       collection: "transaction",
       via: "account",
     },
+    previousIncome: { type: "number", defaultsTo: 0 },
+    previousExpenses: { type: "number", defaultsTo: 0 },
+    balance: { type: "number", defaultsTo: 0 },
+    incomePercentage: { type: "number", defaultsTo: 0 },
+    expensesPercentage: { type: "number", defaultsTo: 0 },
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝

@@ -22,12 +22,12 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { dataState } from "../../context";
+import MainTemplate from "../../components/maintemplate";
 import axios from "axios";
 import Link from "next/link";
 import UpdateAcc from "../../components/UpdateAcc";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import Loader from "../../components/Loader";
-import MainTemplate from "../../components/maintemplate";
 
 export const Testimonial = ({ children }) => {
   return <Box>{children}</Box>;
@@ -36,7 +36,7 @@ export const Testimonial = ({ children }) => {
 export const TestimonialContent = ({ children }) => {
   return (
     <Stack
-      bg={useColorModeValue("white", "gray.800")}
+      bg={useColorModeValue("white", "#0d0d0d")}
       boxShadow={"lg"}
       p={8}
       rounded={"xl"}
@@ -106,7 +106,7 @@ const Homepage = () => {
 
     const options = {
       method: "POST",
-      url: "https://expenss-api-sample.onrender.com/addAccount",
+      url: "http://localhost:1337/addAccount",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -176,7 +176,7 @@ const Homepage = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <Box bg={useColorModeValue("gray.100", "gray.900")}>
+      <Box bg={useColorModeValue("gray.100", "#090909")}>
         <Container maxW={"7xl"} py={16} as={Stack} spacing={12}>
           {searchResult && (
             <Flex
@@ -191,7 +191,7 @@ const Homepage = () => {
               {searchResult.map((result, i) => (
                 <WrapItem key={i} justifyContent={"center"} width={"100%"}>
                   <Stack
-                    bg={useColorModeValue("white", "gray.800")}
+                    bg={useColorModeValue("white", "#1B1B1B")}
                     boxShadow={"sm"}
                     px={5}
                     py={3}
@@ -201,7 +201,7 @@ const Homepage = () => {
                     borderColor={useColorModeValue("navy", "lime")}
                     _hover={{
                       shadow: "lg",
-                      bg: useColorModeValue("white", "gray.700"),
+                      bg: useColorModeValue("white", "#000000"),
                       color: useColorModeValue("black", "white"),
                       borderWidth: 1,
                       borderBlockColor: useColorModeValue("black", "white"),
@@ -248,6 +248,13 @@ const Homepage = () => {
               new account
             </Button>
           </Stack>
+          {
+            data.accData.length == 0 && (
+              <Flex justifyContent={"center"}>
+                <Text>No accounts, cretae new one</Text>
+              </Flex>
+            )
+          }
 
           <Wrap
             direction={{ base: "column", md: "row" }}
@@ -259,7 +266,7 @@ const Homepage = () => {
                 return (
                   <WrapItem key={i} justifyContent={"center"}>
                     <Stack
-                      bg={useColorModeValue("white", "gray.800")}
+                      bg={useColorModeValue("white", "#1B1B1B")}
                       boxShadow={"lg"}
                       p={8}
                       rounded={"xl"}

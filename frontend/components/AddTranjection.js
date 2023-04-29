@@ -12,11 +12,13 @@ import {
   ModalOverlay,
   Select,
   Stack,
+  useColorModeValue,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { color } from "framer-motion";
 
 function AddTranjection({ accId, fetchSignleAcc }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,7 +33,7 @@ function AddTranjection({ accId, fetchSignleAcc }) {
     const { token } = JSON.parse(user);
     const options = {
       method: "POST",
-      url: `https://expenss-api-sample.onrender.com/addTransaction/${accId}`,
+      url: `http://localhost:1337/addTransaction/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -69,7 +71,7 @@ function AddTranjection({ accId, fetchSignleAcc }) {
 
   useEffect(() => {
     axios
-      .get("https://expenss-api-sample.onrender.com/category")
+      .get("http://localhost:1337/category")
       .then((res) => {
         setCatlist(res.data);
       })
@@ -80,7 +82,10 @@ function AddTranjection({ accId, fetchSignleAcc }) {
 
   return (
     <>
-      <Button colorScheme="whatsapp" onClick={onOpen}>
+      <Button backgroundColor={useColorModeValue("#0dff6e", "#1B1B1B")} _hover={{
+        backgroundColor: useColorModeValue("#00c24e", "#00e85d"),
+        color: useColorModeValue("black", "black")
+      }} onClick={onOpen}>
         {" "}
         + new transaction
       </Button>

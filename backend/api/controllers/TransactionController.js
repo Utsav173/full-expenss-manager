@@ -5,7 +5,12 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const { generateData, generateRandomNames } = require("../utils");
+const {
+  generateData,
+  generateRandomNames,
+  calculatePercentageChange,
+  expenssPrCalc,
+} = require("../utils");
 
 module.exports = {
   /**
@@ -21,6 +26,9 @@ module.exports = {
     try {
       const accountId = req.params.id;
       console.log(accountId);
+      if (!accountId) {
+        return res.status(404).json({ message: "account id required" });
+      }
       const account = await Accounts.findOne({ id: accountId });
       const transactionsData = await Transaction.find({
         account: accountId,
@@ -32,37 +40,26 @@ module.exports = {
             createdAt: "DESC",
           },
         ]);
-      const balance = await Transaction.sum("amount").where({
-        account: accountId,
-      });
 
-      let income = 0;
-      let expenses = 0;
-
+      let cuurentIncome = 0;
+      let currentExpens = 0;
+      let totalBalance = 0;
       transactionsData.forEach((element) => {
-        const h = element.amount;
-        if (h < 0) {
-          expenses += h;
+        if (element.amount > 0) {
+          cuurentIncome += element.amount;
         } else {
-          income += h;
+          currentExpens += Math.abs(element.amount);
         }
+        totalBalance += element.amount;
       });
-      const totalIncome = income;
-      const totalExpenses = Math.abs(expenses);
-      const totalAmount = totalIncome + totalExpenses;
-
-      const incomePercentageChange =
-        ((totalAmount - totalExpenses) / totalAmount) * 100;
-      const expensePercentageChange =
-        ((totalAmount - totalIncome) / totalAmount) * 100;
 
       const finalData = {
         data: transactionsData,
-        balance: balance.toFixed(2),
-        income: income.toFixed(2),
-        incomePercentageChange: incomePercentageChange.toFixed(2),
-        expenses: expenses.toFixed(2),
-        expensePercentageChange: expensePercentageChange.toFixed(2),
+        balance: totalBalance.toFixed(2),
+        income: cuurentIncome.toFixed(2),
+        incomePercentageChange: account.incomePercentage.toFixed(2),
+        expensePercentageChange: account.expensesPercentage.toFixed(2),
+        expenses: currentExpens.toFixed(2),
         accountId,
         nameAccount: account.name,
       };
@@ -121,7 +118,125 @@ module.exports = {
         updatedBy: req.user.id,
         account: tID,
       });
-      return res.status(201).json({ data: newTransactions });
+
+      const currentIcomeExp = await Transaction.find({
+        account: tID,
+      });
+
+      let cuurentIncome = 0;
+      let currentExpens = 0;
+      let totalBalance = 0;
+      currentIcomeExp.forEach((element) => {
+        if (element.amount > 0) {
+          cuurentIncome += element.amount;
+        } else {
+          currentExpens += Math.abs(element.amount);
+        }
+        totalBalance += element.amount;
+      });
+
+      const cuurentBalanceData = await Accounts.findOne({ id: tID });
+      console.log("====================================");
+      console.log(cuurentBalanceData);
+      console.log("====================================");
+      if (amount > 0) {
+        console.log("invome update");
+        const incomeChange = calculatePercentageChange(
+          cuurentIncome,
+          cuurentBalanceData.previousIncome
+        );
+
+        await Accounts.updateOne({ id: tID }).set({
+          previousIncome: cuurentIncome,
+          balance: totalBalance,
+          incomePercentage: incomeChange,
+        });
+        return res.status(201).json({ data: newTransactions });
+      } else {
+        const expensesChange = expenssPrCalc(
+          currentExpens,
+          cuurentBalanceData.previousExpenses
+        );
+
+        await Accounts.updateOne({ id: tID }).set({
+          previousExpenses: currentExpens,
+          balance: totalBalance,
+          expensesPercentage: expensesChange,
+        });
+        return res.status(201).json({ data: newTransactions });
+      }
+    } catch (error) {
+      console.log(error.message);
+      return res.serverError(error.message);
+    }
+  },
+  addLargeGeneratedTransaction: async (req, res) => {
+    try {
+      const dataLength = req.body.qnty;
+      const tID = req.params.tId;
+      const currentUser = req.user.id;
+      if (!tID) {
+        return res.status(404).json({ message: "account id required" });
+      }
+      const isValid = await Accounts.findOne({ id: tID });
+      if (!isValid) {
+        return res.status(404).json({ message: "account not found" });
+      }
+      if (!dataLength) {
+        return res.status(404).json({ message: "qnty field required" });
+      }
+      const { data } = await generateData(dataLength, tID, currentUser);
+      await Transaction.createEach(data);
+
+      const cuurentBalanceData = await Accounts.findOne({ id: tID });
+      console.log("====================================");
+      console.log(cuurentBalanceData);
+      console.log("====================================");
+      data.forEach(async (element) => {
+        const currentIcomeExp = await Transaction.find({
+          account: tID,
+        });
+
+        let cuurentIncome = 0;
+        let currentExpens = 0;
+        let totalBalance = 0;
+        currentIcomeExp.forEach((element) => {
+          if (element.amount > 0) {
+            cuurentIncome += element.amount;
+          } else {
+            currentExpens += Math.abs(element.amount);
+          }
+          totalBalance += element.amount;
+        });
+
+        if (element.amount > 0) {
+          const incomeChange = calculatePercentageChange(
+            cuurentIncome,
+            cuurentBalanceData.previousIncome
+          );
+
+          await Accounts.updateOne({ id: tID }).set({
+            previousIncome: cuurentIncome,
+            balance: totalBalance,
+            incomePercentage: incomeChange.toFixed(2),
+          });
+        } else {
+          const expensesChange = expenssPrCalc(
+            currentExpens,
+            cuurentBalanceData.previousExpenses
+          );
+
+          console.log("====================================");
+          console.log("expense update", expensesChange);
+          console.log("====================================");
+          await Accounts.updateOne({ id: tID }).set({
+            previousExpenses: currentExpens,
+            balance: totalBalance,
+            expensesPercentage: expensesChange.toFixed(2),
+          });
+        }
+      });
+      return res.status(201).json({ message: "success" });
     } catch (error) {
       console.log(error.message);
       return res.serverError(error.message);
@@ -134,7 +249,7 @@ module.exports = {
       if (!dataLength) {
         return res.status(404).json({ message: "qnty field required" });
       }
-      const data = await generateData(dataLength);
+      const data = await generateData(parseInt(dataLength));
       return res.json(data);
     } catch (error) {
       console.log(error.message);
@@ -164,7 +279,9 @@ module.exports = {
   editTransaction: async (req, res) => {
     const tId = req.params.id;
     try {
-      const transactions = await Transaction.findOne({ id: tId }).populate("category");
+      const transactions = await Transaction.findOne({ id: tId }).populate(
+        "category"
+      );
       return res.json({ data: transactions });
     } catch (error) {
       console.log(error.message);
@@ -199,6 +316,25 @@ module.exports = {
         ...values,
         updatedBy: req.user.id,
       });
+
+      const cuurentBalanceData = await Accounts.findOne({
+        id: updatedTransaction.account,
+      });
+
+      if (updatedTransaction.amount > 0) {
+        await Accounts.updateOne({ id: tID }).set({
+          previousIncome:
+            cuurentBalanceData.previousIncome + updatedTransaction.amount,
+        });
+        return res.status(201).json({ data: newTransactions });
+      } else {
+        await Accounts.updateOne({ id: accountId }).set({
+          previousExpenses:
+            cuurentBalanceData.previousExpenses +
+            Math.abs(updatedTransaction.amount),
+        });
+        return res.status(201).json({ data: newTransactions });
+      }
       return res.json({ data: updatedTransaction });
     } catch (error) {
       console.log(error.message);
@@ -233,6 +369,26 @@ module.exports = {
         });
       }
       await Transaction.destroy({ id: transId });
+      return res.status(200).json({ message: "Transaction deleted" });
+    } catch (error) {
+      console.log(error.message);
+      return res.serverError(error.message);
+    }
+  },
+  rmAllTransaction: async (req, res) => {
+    const accountId = req.params.accId;
+    if (!accountId) {
+      return res.status(404).json({ message: "account not found" });
+    }
+    try {
+      await Transaction.destroy({ account: accountId });
+      await Accounts.updateOne({ id: accountId }).set({
+        previousIncome: 0,
+        previousExpenses: 0,
+        balance: 0,
+        incomePercentage: 0,
+        expensesPercentage: 0,
+      });
       return res.status(200).json({ message: "Transaction deleted" });
     } catch (error) {
       console.log(error.message);

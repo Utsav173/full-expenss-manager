@@ -30,7 +30,7 @@ export default function SignupCard() {
 
 
   const handleSignup = () => {
-    axios.post('https://expenss-api-sample.onrender.com/signup', {
+    axios.post('http://localhost:1337/signup', {
       email:email,
       password:password,
       name:name,

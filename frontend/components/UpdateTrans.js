@@ -36,7 +36,7 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `https://expenss-api-sample.onrender.com/editTransaction/${transId}`,
+      url: `http://localhost:1337/editTransaction/${transId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -62,7 +62,7 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
     const { token } = JSON.parse(user);
     const options = {
       method: "PUT",
-      url: `https://expenss-api-sample.onrender.com/editTransaction/${transId}`,
+      url: `http://localhost:1337/editTransaction/${transId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -101,7 +101,7 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
   };
   useEffect(() => {
     axios
-      .get("https://expenss-api-sample.onrender.com/category")
+      .get("http://localhost:1337/category")
       .then((res) => {
         setCatlist(res.data);
       })

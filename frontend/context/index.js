@@ -8,7 +8,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [searchResult, setSearchResult] = useState();
-
+  const [accountId, setId] = useState()
   const [data, setData] = useState();
   const [user, setUser] = useLocalStorage("userInfo", "");
   const [refresh, setRefresh] = useState(false);
@@ -23,7 +23,7 @@ const AuthProvider = ({ children }) => {
 
     const options = {
       method: "GET",
-      url: "https://expenss-api-sample.onrender.com/",
+      url: "http://localhost:1337/",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -52,7 +52,7 @@ const AuthProvider = ({ children }) => {
 
     const options = {
       method: "POST",
-      url: "https://expenss-api-sample.onrender.com/addAccount",
+      url: "http://localhost:1337/addAccount",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -98,7 +98,7 @@ const AuthProvider = ({ children }) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "DELETE",
-      url: `https://expenss-api-sample.onrender.com/delAccount/${accID}`,
+      url: `http://localhost:1337/delAccount/${accID}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -145,7 +145,7 @@ const AuthProvider = ({ children }) => {
         data,
         setData,handleDeleteAcc,handleCreateAccount,
         refresh,
-        setRefresh,searchResult, setSearchResult
+        setRefresh,searchResult, setSearchResult,accountId, setId
       }}
     >
       {children}

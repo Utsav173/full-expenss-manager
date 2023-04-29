@@ -3,6 +3,8 @@ import {
   Button,
   Flex,
   Heading,
+  Icon,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -31,29 +33,32 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MainTemplate from "../../../components/maintemplate";
 import { useRouter } from "next/router";
-import { Testimonial, TestimonialContent, TestimonialText } from "../homepage";
 import {
   AddIcon,
   CheckCircleIcon,
   DeleteIcon,
   MinusIcon,
   RepeatClockIcon,
-  RepeatIcon,
 } from "@chakra-ui/icons";
 import AddTranjection from "../../../components/AddTranjection";
 import UpdateTransactions from "../../../components/UpdateTrans";
-import { dataState } from "../../../context";
 import BalanceChart from "../../../components/BalanceChart";
 import Loader from "../../../components/Loader";
 import TransactionChart from "../../../components/TransactionChart";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import Report from "../../../components/Report";
+import { IoIosShareAlt } from "react-icons/io";
+import { AiFillDelete } from "react-icons/ai";
 
-const account = () => {
-  const router = useRouter();
+const account = (props) => {
+  const { query } = props;
 
-  const { id } = router.query;
+  // const router = useRouter();
+  const id = query.id;
   const [shareList, setShareList] = useState();
   const [transData, setTransData] = useState();
   const [isShareModal, setIsShareModal] = useState(false);
@@ -61,7 +66,7 @@ const account = () => {
   const [chartData, setChartData] = useState([]);
   const [intChartData, setIntChartData] = useState([]);
   const [intLabelData, setIntLabelData] = useState([]);
-  const [chartLable, setChartLable] = useState(["first","seond"]);
+  const [chartLable, setChartLable] = useState([]);
   const [email, setEmail] = useState("");
   const [sampleAccData, setSampleAccData] = useState();
   const [intLoading, setIntLoading] = useState(true);
@@ -72,6 +77,23 @@ const account = () => {
   const [currentuserData, setCurrentuserData] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(15);
+  const reportRef = useRef();
+  useEffect(() => {
+    const user = localStorage.getItem("userInfo");
+    const { token } = JSON.parse(user);
+    axios
+      .get("http://localhost:1337/editProfile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setCurrentuserData(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   const handleRowsPerPageChange = (e) => {
     const value = parseInt(e.target.value);
@@ -82,7 +104,7 @@ const account = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `https://expenss-api-sample.onrender.com/editAccount/${id}`,
+      url: `http://localhost:1337/editAccount/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -91,7 +113,7 @@ const account = () => {
       .request(options)
       .then((response) => {
         console.log(response.data.data);
-        setSampleAccData(response.data.data);
+        return setSampleAccData(response.data.data);
       })
       .catch((error) => {
         console.log(error);
@@ -101,7 +123,7 @@ const account = () => {
           duration: 3000,
           isClosable: true,
         });
-        window.location.href = "/";
+        return (window.location.href = "/");
       });
   };
   const fetchSignleAcc = () => {
@@ -109,26 +131,27 @@ const account = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `https://expenss-api-sample.onrender.com/viewTransaction/${id}`,
+      url: `http://localhost:1337/viewTransaction/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
     axios
       .request(options)
-      .then(async(response) => {
+      .then((response) => {
+        console.log(response.data);
         setTransData(response.data);
-        const newArr = await response.data.data.map((element) => {
+        const newArr = response.data.data.map((element) => {
           return element.amount;
         });
-        const newLablelArr = await response.data.data.map((element) => {
+        const newLablelArr = response.data.data.map((element) => {
           return element.text;
         });
         setChartData(newArr);
         setIntChartData(newArr.slice(0, limit));
         setChartLable(newLablelArr);
         setIntLabelData(newLablelArr.slice(0, limit));
-        setIntLoading(false);
+        return setIntLoading(false);
       })
       .catch((error) => {
         console.log(error);
@@ -138,7 +161,7 @@ const account = () => {
           duration: 3000,
           isClosable: true,
         });
-        window.location.href = "/";
+        return (window.location.href = "/");
       });
   };
 
@@ -165,7 +188,7 @@ const account = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `https://expenss-api-sample.onrender.com/share/${id}`,
+      url: `http://localhost:1337/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -193,7 +216,7 @@ const account = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "POST",
-      url: `https://expenss-api-sample.onrender.com/account/share/${id}`,
+      url: `http://localhost:1337/account/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -232,7 +255,7 @@ const account = () => {
     const { token } = JSON.parse(user);
 
     axios
-      .delete(`https://expenss-api-sample.onrender.com/rmTransaction/${tId}`, {
+      .delete(`http://localhost:1337/rmTransaction/${tId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -256,15 +279,37 @@ const account = () => {
         });
       });
   };
+  const deleteAllTrans = () => {
+    const user = localStorage.getItem("userInfo");
+    const { token } = JSON.parse(user);
+    axios
+      .delete(`http://localhost:1337/deleteAllTransaction/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        toast({
+          title: response.data.message,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        return fetchSignleAcc();
+      })
+      .catch((error) => {
+        return toast({
+          title: error.response.message,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  };
 
   useEffect(() => {
-    if (!localStorage.getItem("userInfo")) {
-      window.location.href = "/";
-    } else {
-      setCurrentuserData(JSON.parse(localStorage.getItem("userInfo")));
-      fetchSignleAcc();
-      fetchAccData();
-    }
+    fetchSignleAcc();
+    fetchAccData();
   }, []);
 
   const handleClick = () => {
@@ -346,26 +391,48 @@ const account = () => {
           alignItems={"center"}
           justifyContent={"space-between"}
         >
-          {currentuserData &&
-            sampleAccData.owner == currentuserData.user.id && (
-              <Button
-                onClick={handleShareAcc}
-                colorScheme={useColorModeValue("blackAlpha", "blue")}
-              >
-                Share Account
-              </Button>
-            )}
+          {currentuserData && sampleAccData.owner == currentuserData.id && (
+            <IconButton
+              rounded={"full"}
+              aria-label="share account"
+              icon={<IoIosShareAlt />}
+              onClick={handleShareAcc}
+              backgroundColor={useColorModeValue("blue.300", "#141414")}
+              color={useColorModeValue("#141414","white")}
+              _hover={{
+                backgroundColor: useColorModeValue("blue.500", "blue.200"),
+                color: useColorModeValue("white", "gray.900"),
+              }}
+            />
+          )}
           <AddTranjection accId={id} fetchSignleAcc={fetchSignleAcc} />
+          <IconButton
+            aria-label="delete all transaction"
+            rounded={"full"}
+            icon={<AiFillDelete />}
+            backgroundColor={useColorModeValue("red.300", "#141414")}
+              color={useColorModeValue("#141414","white")}      
+                   _hover={{
+                    color:useColorModeValue("#141414","black"),      
+
+              backgroundColor: useColorModeValue("red.500", "red.300"),
+            }}
+            onClick={deleteAllTrans}
+          />
         </Stack>
-        <Flex
-          flexDirection={{ base: "column", md: "row" }}
+        <Stack
+          direction={{ base: "column", md: "row" }}
           spacing={5}
-          flexWrap={"wrap"}
           my={3}
           justifyContent={"space-evenly"}
           alignItems={"center"}
         >
-          <Stat boxShadow={"md"} p={2}>
+          <Stat
+            boxShadow={"md"}
+            backgroundColor={useColorModeValue("gray.200", "#141414")}
+            w={{ base: "100%", md: "-moz-fit-content" }}
+            p={2}
+          >
             <StatLabel>Income</StatLabel>
             <StatNumber color={useColorModeValue("green", "green.400")}>
               {new Intl.NumberFormat("en-IN", {
@@ -381,6 +448,9 @@ const account = () => {
           <Stat
             boxShadow={"lg"}
             p={2}
+            backgroundColor={useColorModeValue("gray.200", "#141414")}
+
+            w={{ base: "100%", md: "-moz-fit-content" }}
             alignItems={"center"}
             justifyContent={"center"}
           >
@@ -392,7 +462,13 @@ const account = () => {
               }).format(transData.balance)}
             </StatNumber>
           </Stat>
-          <Stat boxShadow={"md"} p={2}>
+          <Stat
+                      backgroundColor={useColorModeValue("gray.200", "#141414")}
+
+            boxShadow={"md"}
+            p={2}
+            w={{ base: "100%", md: "-moz-fit-content" }}
+          >
             <StatLabel>Expense</StatLabel>
             <StatNumber color={"red"}>
               {" "}
@@ -406,7 +482,7 @@ const account = () => {
               {transData.expensePercentageChange}%
             </StatHelpText>
           </Stat>
-        </Flex>
+        </Stack>
         {transData.data.length > 0 && (
           <Stack spacing={"8"}>
             <Button
@@ -452,7 +528,7 @@ const account = () => {
               my={3}
               alignItems={"center"}
               alignSelf={"center"}
-              width={{ base: "90%", sm: "full", md: "75%", lg: "70%" }}
+              width={"100%"}
             >
               <TransactionChart
                 chartLable={intLabelData}
@@ -482,10 +558,14 @@ const account = () => {
           my={2}
           px={{ base: 1, md: 3 }}
           overflowX={"auto"}
+          ref={reportRef}
         >
-          <Heading size={"lg"} my={2}>
-            Recent transactions
-          </Heading>
+          <Flex justifyContent={"space-between"}>
+            <Heading size={"lg"} my={2}>
+              Recent transactions
+            </Heading>
+            {transData.data.length > 0 && <Report transData={transData} />}
+          </Flex>
 
           <Table
             textAlign={"center"}
@@ -557,7 +637,11 @@ const account = () => {
             justifyContent={"flex-start"}
             alignItems={"center"}
           >
-            <Button size={"sm"} onClick={handleClick}>
+            <Button
+              size={"sm"}
+              _dark={{ backgroundColor: "#171923", rounded: "full" }}
+              onClick={handleClick}
+            >
               <AddIcon />
             </Button>
             <Button
@@ -567,10 +651,34 @@ const account = () => {
               size={"sm"}
               backgroundColor={"azure"}
               boxShadow={"md"}
+              _hover={{
+                backgroundColor: "#e3ffff",
+                color: "black",
+                boxShadow: "lg",
+                cursor: "pointer",
+                _dark: {
+                  backgroundColor: "#3d3d3d",
+                  color: "white",
+                },
+              }}
+              _dark={{
+                backgroundColor: "#000000",
+                color: "white",
+                boxShadow: "lg",
+                cursor: "pointer",
+                _hover: {
+                  backgroundColor: "#3d3d3d",
+                  color: "white",
+                },
+              }}
             >
               {currentPage}
             </Button>
-            <Button size={"sm"} onClick={handleDescreased}>
+            <Button
+              size={"sm"}
+              _dark={{ backgroundColor: "#171923", rounded: "full" }}
+              onClick={handleDescreased}
+            >
               <MinusIcon />
             </Button>
           </Flex>
@@ -592,6 +700,12 @@ const account = () => {
       </Flex>
     </MainTemplate>
   );
+};
+export const getServerSideProps = async (context) => {
+  {
+    const { query } = context;
+    return { props: { query } };
+  }
 };
 
 export default account;

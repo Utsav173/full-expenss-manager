@@ -20,29 +20,11 @@ const mailData = {
     pass: process.env.PASS,
   },
 };
-async function generateData(numEntries) {
-  const categories = [
-    "6444c505caeba826785fa092",
-    "6444c505caeba826785fa093",
-    "6444c505caeba826785fa094",
-    "6444c505caeba826785fa095",
-    "6444c505caeba826785fa096",
-    "6444c505caeba826785fa097",
-    "6444c505caeba826785fa098",
-    "6444c505caeba826785fa099",
-    "6444c505caeba826785fa09a",
-    "6444c505caeba826785fa09b",
-    "6444c505caeba826785fa09c",
-    "6444c505caeba826785fa09d",
-    "6444c505caeba826785fa09e",
-    "6444c505caeba826785fa09f",
-    "6444c505caeba826785fa0a0",
-    "6444c505caeba826785fa0a1",
-    "6444c505caeba826785fa0a2",
-    "6444c505caeba826785fa0a3",
-    "6444c505caeba826785fa0a4",
-    "6444c505caeba826785fa0a5"
-];
+async function generateData(numEntries, tID, currentUser) {
+  const catDmta = await Category.find();
+  const categories = catDmta.map((element) => {
+    return element.id;
+  });
   const transfers = [
     "Electric Company",
     "Client A",
@@ -235,7 +217,7 @@ async function generateData(numEntries) {
     let transfer = await transfers[
       Math.floor(Math.random() * transfers.length)
     ];
-    let amount = await parseFloat(Math.random() * 10000 - 5000).toFixed(2);
+    let amount = await parseFloat(Math.random() * 100000 - 50000).toFixed(2);
     let text =
       (await transactions[Math.floor(Math.random() * transactions.length)]) +
       "#" +
@@ -245,6 +227,9 @@ async function generateData(numEntries) {
       amount: amount,
       transfer: transfer,
       category: category,
+      account: tID,
+      by: currentUser,
+      updatedBy: currentUser,
     };
     data["data"].push(entry);
   }
@@ -296,5 +281,31 @@ function generateRandomNames(numNames) {
 
   return names;
 }
+function calculatePercentageChange(currentValue, initialValue) {
+  if (initialValue === 0) {
+    return 0; // Avoid division by zero
+  }
+  return ((currentValue - initialValue) / initialValue) * 100;
+}
+function expenssPrCalc(currentValue, initialValue) {
+  if (initialValue === 0) {
+    return 0; // Avoid division by zero
+  }
 
-module.exports = { createToken, mailData, generateData, generateRandomNames };
+  console.log(
+    "log from utils -->",
+    currentValue,
+    initialValue,
+    ((initialValue - currentValue) / initialValue) * 100
+  );
+  return ((initialValue - currentValue) / initialValue) * 100;
+}
+
+module.exports = {
+  createToken,
+  mailData,
+  generateData,
+  generateRandomNames,
+  calculatePercentageChange,
+  expenssPrCalc,
+};

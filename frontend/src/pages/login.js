@@ -33,7 +33,7 @@ const Login = () => {
       password: password,
     };
     axios
-      .post("https://expenss-api-sample.onrender.com/login", config)
+      .post("http://localhost:1337/login", config)
       .then((response) => {
         console.log(response);
         setUser(response.data.data);

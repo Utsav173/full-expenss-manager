@@ -31,6 +31,8 @@ module.exports.policies = {
   },
   TransactionController:{
     '*': 'isLoggedin',
+    "generateDataForTrans":true,
+    "generateNames":true
   }
 
 };

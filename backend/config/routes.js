@@ -29,6 +29,8 @@ module.exports.routes = {
   "DELETE /delUser/:id": "UserController.delUser",
 
   "POST /searchTransaction": "AccountsController.searchTransactions",
+  "DELETE /deleteAllTransaction/:accId":
+    "TransactionController.rmAllTransaction",
   "PUT /editTransaction/:id": "TransactionController.updateTransaction",
   "PUT /editAccount/:id": "AccountsController.updateAccount",
   "POST /login": "UserController.userLogin",
@@ -41,10 +43,13 @@ module.exports.routes = {
   "POST /generate": "TransactionController.generateDataForTrans",
   "POST /generate/name": "TransactionController.generateNames",
   "GET /category": "CategoryController.find",
+  "GET /categoryId": "CategoryController.getCatId",
   "GET /category/:id": "CategoryController.findOne",
   "POST /category": "CategoryController.create",
   "PUT /category/:id": "CategoryController.update",
   "DELETE /category/:id": "CategoryController.delete",
+  "POST /largeDataInsert/:tId":
+    "TransactionController.addLargeGeneratedTransaction",
   /***************************************************************************
    *                                                                          *
    * More custom routes here...                                               *

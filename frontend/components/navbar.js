@@ -40,6 +40,7 @@ import { dataState } from "../context";
 import axios from "axios";
 import Link from "next/link";
 import { InfoOutlineIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { useEffect } from "react";
 
 const LinkItems = [
   { name: "Home", icon: FiHome, href: "/homepage" },
@@ -50,7 +51,7 @@ const LinkItems = [
 export default function SidebarWithHeader({ children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Box minH="100vh" bg={useColorModeValue("gray.100", "gray.900")}>
+    <Box minH="100vh" bg={useColorModeValue("gray.100", "#090909")}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
@@ -81,7 +82,7 @@ const SidebarContent = ({ onClose, ...rest }) => {
   return (
     <Box
       transition="3s ease"
-      bg={useColorModeValue("white", "gray.900")}
+      bg={useColorModeValue("white", "#090909")}
       borderRight="1px"
       borderRightColor={useColorModeValue("gray.200", "gray.700")}
       w={{ base: "full", md: 60 }}
@@ -141,8 +142,9 @@ const NavItem = ({ icon, children, ...rest }) => {
 };
 
 const MobileNav = ({ onOpen, ...rest }) => {
-  const { user, setUser,searchResult, setSearchResult } = dataState();
+  const {  setSearchResult } = dataState();
   const { colorMode, toggleColorMode } = useColorMode();
+  const [userInfo, setUserInfo] = useState();
   const toast = useToast();
   const router = useRouter();
   const handleLogout = () => {
@@ -150,7 +152,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "GET",
-      url: "https://expenss-api-sample.onrender.com/logout",
+      url: "http://localhost:1337/logout",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -185,7 +187,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "POST",
-      url: "https://expenss-api-sample.onrender.com/searchTransaction",
+      url: "http://localhost:1337/searchTransaction",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -207,6 +209,9 @@ const MobileNav = ({ onOpen, ...rest }) => {
         });
       });
   };
+  useEffect(() => {
+    setUserInfo(JSON.parse(localStorage.getItem("userInfo")));
+  }, []);
 
   return (
     <Flex
@@ -216,9 +221,10 @@ const MobileNav = ({ onOpen, ...rest }) => {
       alignItems="center"
       bg={useColorModeValue("white", "gray.900")}
       borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      borderBottomColor={useColorModeValue("gray.200", "#1B1B1B")}
       justifyContent={{ base: "space-between", md: "flex-end" }}
       {...rest}
+      backgroundColor={useColorModeValue("white", "#1B1B1B")}
     >
       <IconButton
         display={{ base: "flex", md: "none" }}
@@ -254,27 +260,28 @@ const MobileNav = ({ onOpen, ...rest }) => {
               transition="all 0.3s"
               _focus={{ boxShadow: "none" }}
             >
+            {userInfo && 
               <HStack>
-                <Avatar src="https://bit.ly/broken-link" />
+                <Avatar size={"sm"} src="https://bit.ly/broken-link" />
                 <VStack
                   display={{ base: "none", md: "flex" }}
                   alignItems="flex-start"
                   spacing="1px"
                   ml="2"
                 >
-                  <Text fontSize="sm">{user && user.user.name}</Text>
+                  <Text fontSize="sm">{userInfo.user.name}</Text>
                   <Text fontSize="xs" color="gray.600">
-                    {user && user.user.email}
+                    {userInfo.user.email}
                   </Text>
                 </VStack>
                 <Box display={{ base: "none", md: "flex" }}>
                   <FiChevronDown />
                 </Box>
-              </HStack>
+              </HStack>}
             </MenuButton>
             <MenuList
-              bg={useColorModeValue("white", "gray.900")}
-              borderColor={useColorModeValue("gray.200", "gray.700")}
+              bg={useColorModeValue("white", "#1B1B1B")}
+              borderColor={useColorModeValue("gray.200", "#000000")}
             >
               <Link href="/profile">
                 <MenuItem>Profile</MenuItem>

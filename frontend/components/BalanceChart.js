@@ -11,8 +11,8 @@ const BalanceChart = ({ expenses, income }) => {
       {
         label: "expenss and income",
         data: [income, expenses],
-        backgroundColor: ["rgba(131, 247, 129, 0.4)", "rgba(255, 0, 0, 0.4)"],
-        borderColor: ["rgba(131, 247, 129, 1)", "rgba(255, 0, 0, 1)"],
+        backgroundColor: ["rgba(13, 255, 110, 0.8)", "rgba(255, 13, 13, 0.5)"],
+        borderColor: ["rgba(131, 247, 129, 1)", "rgba(255, 13, 13, 1)"],
         borderWidth: 1,
         width: 10,
       },
