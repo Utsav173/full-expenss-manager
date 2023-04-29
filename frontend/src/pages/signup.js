@@ -30,7 +30,7 @@ export default function SignupCard() {
 
 
   const handleSignup = () => {
-    axios.post(`${process.env.ENDPOINTS}/signup`, {
+    axios.post(`${process.env.NEXT_PUBLIC_ENDPOINTS}/signup`, {
       email:email,
       password:password,
       name:name,

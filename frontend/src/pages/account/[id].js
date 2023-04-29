@@ -82,7 +82,7 @@ const account = (props) => {
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     axios
-      .get(`${process.env.ENDPOINTS}/editProfile`, {
+      .get(`${process.env.NEXT_PUBLIC_ENDPOINTS}/editProfile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -104,7 +104,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `${process.env.ENDPOINTS}/editAccount/${id}`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/editAccount/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -131,7 +131,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `${process.env.ENDPOINTS}/viewTransaction/${id}`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/viewTransaction/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -188,7 +188,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `${process.env.ENDPOINTS}/share/${id}`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -216,7 +216,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "POST",
-      url: `${process.env.ENDPOINTS}/account/share/${id}`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/account/share/${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -255,7 +255,7 @@ const account = (props) => {
     const { token } = JSON.parse(user);
 
     axios
-      .delete(`${process.env.ENDPOINTS}/rmTransaction/${tId}`, {
+      .delete(`${process.env.NEXT_PUBLIC_ENDPOINTS}/rmTransaction/${tId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -283,7 +283,7 @@ const account = (props) => {
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     axios
-      .delete(`${process.env.ENDPOINTS}/deleteAllTransaction/${id}`, {
+      .delete(`${process.env.NEXT_PUBLIC_ENDPOINTS}/deleteAllTransaction/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

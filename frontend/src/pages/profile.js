@@ -26,7 +26,7 @@ export default function UserProfileEdit() {
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     axios
-      .get(`${process.env.ENDPOINTS}/editProfile`, {
+      .get(`${process.env.NEXT_PUBLIC_ENDPOINTS}/editProfile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -50,7 +50,7 @@ export default function UserProfileEdit() {
     const { token } = JSON.parse(user);
     const options = {
       method: "PUT",
-      url: `${process.env.ENDPOINTS}/editProfile`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/editProfile`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

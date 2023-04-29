@@ -152,7 +152,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "GET",
-      url: `${process.env.ENDPOINTS}/logout`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/logout`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -187,7 +187,7 @@ const MobileNav = ({ onOpen, ...rest }) => {
     console.log(token);
     const options = {
       method: "POST",
-      url: `${process.env.ENDPOINTS}/searchTransaction`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/searchTransaction`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

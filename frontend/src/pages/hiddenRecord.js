@@ -13,7 +13,7 @@ const hiddenRecord = () => {
     const { token } = JSON.parse(user);
     const options = {
       method: "POST",
-      url: `${process.env.ENDPOINTS}/largeDataInsert/${accId}`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/largeDataInsert/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

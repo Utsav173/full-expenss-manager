@@ -32,7 +32,7 @@ const UpdateAcc = ({ accId }) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "GET",
-      url: `${process.env.ENDPOINTS}/editAccount/${accId}`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/editAccount/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -52,7 +52,7 @@ const UpdateAcc = ({ accId }) => {
     const { token } = JSON.parse(user);
     const options = {
       method: "PUT",
-      url: `${process.env.ENDPOINTS}/editAccount/${accId}`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/editAccount/${accId}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -106,7 +106,7 @@ const Homepage = () => {
 
     const options = {
       method: "POST",
-      url: `${process.env.ENDPOINTS}/addAccount`,
+      url: `${process.env.NEXT_PUBLIC_ENDPOINTS}/addAccount`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
