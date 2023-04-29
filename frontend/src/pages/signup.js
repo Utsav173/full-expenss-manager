@@ -14,7 +14,7 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 import Link from 'next/link';
@@ -27,7 +27,14 @@ export default function SignupCard() {
   const [name, setName] = useState("");
   const router = useRouter();
   const toast = useToast()
-
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userInfo"));
+    if (userData) {
+      router.push("/homepage");
+    } else {
+      router.push("/login");
+    }
+  }, []);
 
   const handleSignup = () => {
     axios.post(`https://expenss-api-sample.onrender.com/signup`, {
@@ -61,7 +68,7 @@ export default function SignupCard() {
       minH={'100vh'}
       align={'center'}
       justify={'center'}
-      bg={useColorModeValue('gray.50', 'gray.800')}>
+      bg={useColorModeValue('gray.50', '#090909')}>
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
           <Heading fontSize={'4xl'} textAlign={'center'}>
@@ -73,7 +80,7 @@ export default function SignupCard() {
         </Stack>
         <Box
           rounded={'lg'}
-          bg={useColorModeValue('white', 'gray.700')}
+          bg={useColorModeValue('white', '#1B1B1B')}
           boxShadow={'lg'}
           p={8}>
           <Stack spacing={4}>

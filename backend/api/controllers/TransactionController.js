@@ -317,25 +317,49 @@ module.exports = {
         updatedBy: req.user.id,
       });
 
-      const cuurentBalanceData = await Accounts.findOne({
-        id: updatedTransaction.account,
+      const currentIcomeExp = await Transaction.find({
+        account: updatedTransaction.account,
       });
 
+      let cuurentIncome = 0;
+      let currentExpens = 0;
+      let totalBalance = 0;
+      currentIcomeExp.forEach((element) => {
+        if (element.amount > 0) {
+          cuurentIncome += element.amount;
+        } else {
+          currentExpens += Math.abs(element.amount);
+        }
+        totalBalance += element.amount;
+      });
+
+      const cuurentBalanceData = await Accounts.findOne({ id: updatedTransaction.account });
       if (updatedTransaction.amount > 0) {
-        await Accounts.updateOne({ id: tID }).set({
-          previousIncome:
-            cuurentBalanceData.previousIncome + updatedTransaction.amount,
+        console.log("invome update");
+        const incomeChange = calculatePercentageChange(
+          cuurentIncome,
+          cuurentBalanceData.previousIncome
+        );
+
+        await Accounts.updateOne({ id: updatedTransaction.account }).set({
+          previousIncome: cuurentIncome,
+          balance: totalBalance,
+          incomePercentage: incomeChange,
         });
-        return res.status(201).json({ data: newTransactions });
+        return res.json({ data: updatedTransaction });
       } else {
-        await Accounts.updateOne({ id: accountId }).set({
-          previousExpenses:
-            cuurentBalanceData.previousExpenses +
-            Math.abs(updatedTransaction.amount),
+        const expensesChange = expenssPrCalc(
+          currentExpens,
+          cuurentBalanceData.previousExpenses
+        );
+
+        await Accounts.updateOne({ id: updatedTransaction.account }).set({
+          previousExpenses: currentExpens,
+          balance: totalBalance,
+          expensesPercentage: expensesChange,
         });
-        return res.status(201).json({ data: newTransactions });
+        return res.json({ data: updatedTransaction });
       }
-      return res.json({ data: updatedTransaction });
     } catch (error) {
       console.log(error.message);
       return res.serverError(error.message);

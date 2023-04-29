@@ -13,6 +13,7 @@ import {
   Select,
   Stack,
   VStack,
+  useColorModeValue,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -122,7 +123,8 @@ function UpdateTransactions({ transId, fetchSignleAcc }) {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent           bg={useColorModeValue('white', '#1B1B1B')}
+>
           <ModalHeader>Update Transaction</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

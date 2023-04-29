@@ -13,6 +13,7 @@ import {
   ModalOverlay,
   Stack,
   VStack,
+  useColorModeValue,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -91,7 +92,8 @@ const UpdateAcc = ({ accId }) => {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent           bg={useColorModeValue('white', '#1B1B1B')}
+>
           <ModalHeader>Update account details</ModalHeader>
           <ModalCloseButton />
 

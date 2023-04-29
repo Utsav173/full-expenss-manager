@@ -82,17 +82,21 @@ function AddTranjection({ accId, fetchSignleAcc }) {
 
   return (
     <>
-      <Button backgroundColor={useColorModeValue("#0dff6e", "#1B1B1B")} _hover={{
-        backgroundColor: useColorModeValue("#00c24e", "#00e85d"),
-        color: useColorModeValue("black", "black")
-      }} onClick={onOpen}>
+      <Button
+        backgroundColor={useColorModeValue("#0dff6e", "#1B1B1B")}
+        _hover={{
+          backgroundColor: useColorModeValue("#00c24e", "#00e85d"),
+          color: useColorModeValue("black", "black"),
+        }}
+        onClick={onOpen}
+      >
         {" "}
         + new transaction
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent bg={useColorModeValue("white", "#1B1B1B")}>
           <ModalHeader>Create new Transaction</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -122,7 +126,7 @@ function AddTranjection({ accId, fetchSignleAcc }) {
                 />
               </FormControl>
               <FormControl isRequired>
-              <FormLabel>category</FormLabel>
+                <FormLabel>category</FormLabel>
 
                 <Select
                   placeholder="category"

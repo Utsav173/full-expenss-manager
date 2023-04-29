@@ -57,7 +57,7 @@ import { AiFillDelete } from "react-icons/ai";
 const account = (props) => {
   const { query } = props;
 
-  // const router = useRouter();
+  const router = useRouter();
   const id = query.id;
   const [shareList, setShareList] = useState();
   const [transData, setTransData] = useState();
@@ -93,6 +93,12 @@ const account = (props) => {
       .catch((err) => {
         console.log(err);
       });
+  }, []);
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userInfo"));
+    if (!userData) {
+      router.push("/login");
+    }
   }, []);
 
   const handleRowsPerPageChange = (e) => {
@@ -283,11 +289,14 @@ const account = (props) => {
     const user = localStorage.getItem("userInfo");
     const { token } = JSON.parse(user);
     axios
-      .delete(`https://expenss-api-sample.onrender.com/deleteAllTransaction/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .delete(
+        `https://expenss-api-sample.onrender.com/deleteAllTransaction/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((response) => {
         toast({
           title: response.data.message,
@@ -343,7 +352,7 @@ const account = (props) => {
       <Modal onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
 
-        <ModalContent>
+        <ModalContent bg={useColorModeValue("white", "#1B1B1B")}>
           <ModalHeader textTransform={"capitalize"}>
             {isShareModal == true
               ? "Share to following user"
@@ -391,29 +400,30 @@ const account = (props) => {
           alignItems={"center"}
           justifyContent={"space-between"}
         >
-          {currentuserData && sampleAccData.owner == currentuserData.id && (
-            <IconButton
-              rounded={"full"}
-              aria-label="share account"
-              icon={<IoIosShareAlt />}
-              onClick={handleShareAcc}
-              backgroundColor={useColorModeValue("blue.300", "#141414")}
-              color={useColorModeValue("#141414","white")}
-              _hover={{
-                backgroundColor: useColorModeValue("blue.500", "blue.200"),
-                color: useColorModeValue("white", "gray.900"),
-              }}
-            />
-          )}
+          {currentuserData &&
+            (sampleAccData && sampleAccData.owner) == currentuserData.id && (
+              <IconButton
+                rounded={"full"}
+                aria-label="share account"
+                icon={<IoIosShareAlt />}
+                onClick={handleShareAcc}
+                backgroundColor={useColorModeValue("blue.300", "#141414")}
+                color={useColorModeValue("#141414", "white")}
+                _hover={{
+                  backgroundColor: useColorModeValue("blue.500", "blue.200"),
+                  color: useColorModeValue("white", "gray.900"),
+                }}
+              />
+            )}
           <AddTranjection accId={id} fetchSignleAcc={fetchSignleAcc} />
           <IconButton
             aria-label="delete all transaction"
             rounded={"full"}
             icon={<AiFillDelete />}
             backgroundColor={useColorModeValue("red.300", "#141414")}
-              color={useColorModeValue("#141414","white")}      
-                   _hover={{
-                    color:useColorModeValue("#141414","black"),      
+            color={useColorModeValue("#141414", "white")}
+            _hover={{
+              color: useColorModeValue("#141414", "black"),
 
               backgroundColor: useColorModeValue("red.500", "red.300"),
             }}
@@ -449,7 +459,6 @@ const account = (props) => {
             boxShadow={"lg"}
             p={2}
             backgroundColor={useColorModeValue("gray.200", "#141414")}
-
             w={{ base: "100%", md: "-moz-fit-content" }}
             alignItems={"center"}
             justifyContent={"center"}
@@ -463,8 +472,7 @@ const account = (props) => {
             </StatNumber>
           </Stat>
           <Stat
-                      backgroundColor={useColorModeValue("gray.200", "#141414")}
-
+            backgroundColor={useColorModeValue("gray.200", "#141414")}
             boxShadow={"md"}
             p={2}
             w={{ base: "100%", md: "-moz-fit-content" }}
@@ -599,7 +607,7 @@ const account = (props) => {
                       <Td>{trans.text}</Td>
                       <Td>{trans.transfer}</Td>
                       <Td>{trans.category.name}</Td>
-                      <Td color={trans.amount < 0 ? "red" : "green"}>
+                      <Td color={trans.amount < 0 ? "red" : "#48bb78"}>
                         {new Intl.NumberFormat("en-IN", {
                           style: "currency",
                           currency: "INR",

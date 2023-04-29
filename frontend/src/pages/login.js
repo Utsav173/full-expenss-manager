@@ -15,7 +15,7 @@ import {
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useLocalStorage from "../../utils";
 
 const Login = () => {
@@ -55,12 +55,20 @@ const Login = () => {
         })
       });
   };
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userInfo"));
+    if (userData) {
+      route.push("/homepage");
+    } else {
+      route.push("/login");
+    }
+  }, []);
   return (
     <Flex
       minH={"100vh"}
       align={"center"}
       justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
+      bg={useColorModeValue("gray.50", "#090909")}
     >
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
         <Stack align={"center"}>
@@ -75,7 +83,7 @@ const Login = () => {
         </Stack>
         <Box
           rounded={"lg"}
-          bg={useColorModeValue("white", "gray.700")}
+          bg={useColorModeValue("white", "#1B1B1B")}
           boxShadow={"lg"}
           p={8}
         >

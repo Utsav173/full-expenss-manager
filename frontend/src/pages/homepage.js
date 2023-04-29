@@ -28,6 +28,7 @@ import Link from "next/link";
 import UpdateAcc from "../../components/UpdateAcc";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import Loader from "../../components/Loader";
+import { useRouter } from "next/router";
 
 export const Testimonial = ({ children }) => {
   return <Box>{children}</Box>;
@@ -99,6 +100,7 @@ const Homepage = () => {
   } = dataState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+  const router = useRouter();
 
   const handleCreateAccount = async () => {
     const user = localStorage.getItem("userInfo");
@@ -150,6 +152,14 @@ const Homepage = () => {
   useEffect(() => {
     fetchHomepageData();
   }, [refresh]);
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userInfo"));
+    if (userData) {
+      router.push("/homepage");
+    } else {
+      router.push("/login");
+    }
+  }, []);
 
   return loading == true ? (
     <Loader />
@@ -158,7 +168,7 @@ const Homepage = () => {
       <Modal onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
 
-        <ModalContent>
+        <ModalContent bg={useColorModeValue("white", "#1B1B1B")}>
           <ModalHeader>create new account</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -213,7 +223,10 @@ const Homepage = () => {
                   >
                     <Link href={`/account/${result.account}`}>
                       <Flex
-                        flexDirection={"row"}
+                        flexDirection={{
+                          base: "column",
+                          md: "row",
+                        }}
                         gap={3}
                         alignItems={"center"}
                         justifyContent={"space-evenly"}
@@ -235,6 +248,16 @@ const Homepage = () => {
                         >
                           Category: {result.category}
                         </Text>
+                        <Text
+                          flexDirection={"row"}
+                          textAlign={"center"}
+                          fontSize={"sm"}
+                        >
+                          Amount:{" "}
+                          <Text color={result.amount > 0 ? "#48bb78" : "red"}>
+                            {result.amount}
+                          </Text>
+                        </Text>
                       </Flex>
                     </Link>
                   </Stack>
@@ -248,13 +271,11 @@ const Homepage = () => {
               new account
             </Button>
           </Stack>
-          {
-            data.accData.length == 0 && (
-              <Flex justifyContent={"center"}>
-                <Text>No accounts, cretae new one</Text>
-              </Flex>
-            )
-          }
+          {data.accData.length == 0 && (
+            <Flex justifyContent={"center"}>
+              <Text>No accounts, cretae new one</Text>
+            </Flex>
+          )}
 
           <Wrap
             direction={{ base: "column", md: "row" }}
