@@ -28,6 +28,7 @@ module.exports.http = {
      ***************************************************************************/
     order: [
       'cookieParser',
+      'session',
       'bodyParser',
       'cors',
       'compress',
