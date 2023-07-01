@@ -1,4 +1,5 @@
 var jwt = require("jsonwebtoken");
+const { faker } = require("@faker-js/faker");
 
 const maxAge = 3 * 24 * 60 * 60;
 /**
@@ -21,192 +22,11 @@ const mailData = {
   },
 };
 async function generateData(numEntries, tID, currentUser) {
-  const catDmta = await Category.find();
-  const categories = catDmta.map((element) => {
+
+  const damta = await Category.find();
+  const categories = damta.map((element) => {
     return element.id;
   });
-  const transfers = [
-    "Electric Company",
-    "Client A",
-    "Supermarket",
-    "Cellular Provider",
-    "Landlord",
-    "Restaurant",
-    "Acme Corporation",
-    "Gas Station",
-    "Fitness Center",
-    "Online Retailer",
-    "Auto Finance Co.",
-    "Employer",
-    "Dentist",
-    "Internet Provider",
-    "Vacation Rental Co.",
-    "Retail Store",
-    "Movie Theater",
-    "Charity Organization",
-    "Jon Doe",
-    "Jane Smith",
-    "Mark Johnson",
-    "Jessica Lee",
-    "David Kim",
-    "Sarah Davis",
-    "Mike Brown",
-    "Amy Chen",
-    "James Rodriguez",
-    "Linda Wilson",
-    "Thomas Jones",
-    "Emily Taylor",
-    "Juan Martinez",
-    "Jennifer Garcia",
-    "Ryan Nguyen",
-    "Julia Perez",
-    "Brandon Taylor",
-    "Vanessa Rodriguez",
-    "Scott Miller",
-    "Megan Hernandez",
-    "Daniel Davis",
-    "Catherine Kim",
-    "Christopher Lee",
-    "Melissa Garcia",
-    "Joshua Lee",
-    "Laura Davis",
-    "Kevin Wilson",
-    "Samantha Brown",
-    "Erica Perez",
-    "Michael Chen",
-    "Maria Martinez",
-    "Eric Johnson",
-    "Angela Lee",
-    "Kyle Brown",
-    "Anna Kim",
-    "Patrick Taylor",
-    "Katherine Rodriguez",
-    "Steven Miller",
-    "Madison Davis",
-    "Brian Martinez",
-    "Allison Hernandez",
-    "Jordan Lee",
-    "Ashley Wilson",
-    "Andrew Perez",
-    "Rebecca Johnson",
-    "Samuel Brown",
-    "Michelle Kim",
-    "Joseph Davis",
-    "Christina Lee",
-    "Nathan Rodriguez",
-    "Hannah Hernandez",
-    "Benjamin Martinez",
-    "Alyssa Taylor",
-    "Nicholas Wilson",
-    "Stephanie Brown",
-    "Ethan Perez",
-    "Olivia Johnson",
-    "Grace Kim",
-    "Tyler Davis",
-    "Lauren Lee",
-    "Isabella Rodriguez",
-    "David Hernandez",
-    "Emma Martinez",
-    "Christopher Taylor",
-    "Amanda Wilson",
-    "Jacob Brown",
-    "Sophia Perez",
-    "William Johnson",
-    "Victoria Kim",
-    "Christopher Davis",
-    "Abigail Lee",
-    "Emily Rodriguez",
-    "Alex Hernandez",
-    "Daniel Martinez",
-    "Lauren Taylor",
-    "John Wilson",
-    "Julia Brown",
-    "Jacob Perez",
-    "Elizabeth Johnson",
-    "Gabriel Kim",
-    "Mia Davis",
-    "Nicholas Lee",
-    "Natalie Rodriguez",
-    "Jasmine Hernandez",
-    "Gabriella Martinez",
-    "Christian Taylor",
-    "Chloe Wilson",
-    "Elijah Brown",
-    "Avery Perez",
-    "Liam Johnson",
-    "Sophie Kim",
-    "Caleb Davis",
-    "Emma Lee",
-    "Zoe Rodriguez",
-    "Anthony Hernandez",
-    "Hailey Martinez",
-    "Brianna Taylor",
-    "Daniel Wilson",
-    "Madeline Brown",
-    "Sydney Perez",
-    "Samuel Johnson",
-    "Makayla Kim",
-    "Austin Davis",
-    "Jocelyn Lee",
-    "Leah Rodriguez",
-    "Diego Hernandez",
-    "Julian Martinez",
-    "Brooklyn Taylor",
-    "Natalia Wilson",
-    "Isabelle Brown",
-    "Aaliyah Perez",
-    "Isaac Johnson",
-    "Alexa Kim",
-    "Cameron Davis",
-    "Madelyn Lee",
-    "Caroline Rodriguez",
-    "Kaylee Hernandez",
-    "Maxwell Martinez",
-    "Adrian Taylor",
-    "Riley Wilson",
-    "Tristan Brown",
-    "Jenna Perez",
-    "Adam Johnson",
-    "Ava Kim",
-    "Mason Davis",
-    "Makenna Lee",
-    "Kennedy Rodriguez",
-    "Landon Hernandez",
-    "Miguel Martinez",
-    "Avery Taylor",
-  ];
-  const transactions = [
-    "Grocery shopping",
-    "Phone bill payment",
-    "Rent payment",
-    "Dentist appointment",
-    "Salary payment",
-    "Movie ticket purchase",
-    "Car fuel refill",
-    "Electricity bill payment",
-    "Gym membership fee",
-    "Online purchase",
-    "Restaurant dinner",
-    "Coffee shop visit",
-    "Clothing purchase",
-    "Haircut appointment",
-    "Flight ticket booking",
-    "Hotel reservation",
-    "Charity donation",
-    "Gift purchase",
-    "Music concert ticket",
-    "Sporting event ticket",
-    "Amazon shopping",
-    "Netflix subscription",
-    "Home insurance premium",
-    "School tuition fee",
-    "Doctor consultation fee",
-    "Fitness class registration",
-    "Car insurance premium",
-    "Mobile phone upgrade",
-    "House cleaning service",
-    "Stock investment",
-  ];
 
   let data = { data: [] };
 
@@ -214,22 +34,16 @@ async function generateData(numEntries, tID, currentUser) {
     let category = await categories[
       Math.floor(Math.random() * categories.length)
     ];
-    let transfer = await transfers[
-      Math.floor(Math.random() * transfers.length)
-    ];
-    let amount = await parseFloat(Math.random() * 100000 - 50000).toFixed(2);
-    let text =
-      (await transactions[Math.floor(Math.random() * transactions.length)]) +
-      "#" +
-      (Math.floor(Math.random() * 100) + 1);
     let entry = {
-      text: text,
-      amount: amount,
-      transfer: transfer,
+      text: faker.finance.transactionDescription(),
+      amount: faker.finance.amount(),
+      transfer: faker.name.fullName(),
       category: category,
       account: tID,
       by: currentUser,
       updatedBy: currentUser,
+      isIncome:faker.datatype.boolean(),
+      createdAt: faker.date.between('2022-01-01T00:00:00.000Z', '2023-06-01T00:00:00.000Z'),
     };
     data["data"].push(entry);
   }
@@ -237,75 +51,10 @@ async function generateData(numEntries, tID, currentUser) {
   return data;
 }
 function generateRandomNames(numNames) {
-  const vowels = ["a", "e", "i", "o", "u"];
-  const consonants = [
-    "b",
-    "c",
-    "d",
-    "f",
-    "g",
-    "h",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-  ];
-  const names = [];
-
-  for (let i = 0; i < numNames; i++) {
-    let name = "";
-    const nameLength = Math.floor(Math.random() * 6) + 5; // Generate a name length between 5 and 10 characters
-
-    // Generate the name by alternating between a random consonant and vowel
-    for (let j = 0; j < nameLength; j++) {
-      if (j % 2 === 0) {
-        name += consonants[Math.floor(Math.random() * consonants.length)];
-      } else {
-        name += vowels[Math.floor(Math.random() * vowels.length)];
-      }
-    }
-
-    names.push(name);
-  }
-
-  return names;
-}
-function calculatePercentageChange(currentValue, initialValue) {
-  if (initialValue === 0) {
-    return 0; // Avoid division by zero
-  }
-  return ((currentValue - initialValue) / initialValue) * 100;
-}
-function expenssPrCalc(currentValue, initialValue) {
-  if (initialValue === 0) {
-    return 0; // Avoid division by zero
-  }
-
-  console.log(
-    "log from utils -->",
-    currentValue,
-    initialValue,
-    ((initialValue - currentValue) / initialValue) * 100
-  );
-  return ((initialValue - currentValue) / initialValue) * 100;
+  const allNames = new Array(numNames * 2)
+    .fill()
+    .map(() => faker.name.fullName());
+  return allNames.slice(0, numNames);
 }
 
-module.exports = {
-  createToken,
-  mailData,
-  generateData,
-  generateRandomNames,
-  calculatePercentageChange,
-  expenssPrCalc,
-};
+module.exports = { createToken, mailData, generateData, generateRandomNames };

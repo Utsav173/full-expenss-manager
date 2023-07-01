@@ -5,12 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const {
-  generateData,
-  generateRandomNames,
-  calculatePercentageChange,
-  expenssPrCalc,
-} = require("../utils");
+const { generateData, generateRandomNames } = require("../utils");
 
 module.exports = {
   /**
@@ -25,10 +20,6 @@ module.exports = {
   getTrsansaction: async (req, res) => {
     try {
       const accountId = req.params.id;
-      // console.log(accountId);
-      if (!accountId) {
-        return res.status(404).json({ message: "account id required" });
-      }
       const account = await Accounts.findOne({ id: accountId });
       const transactionsData = await Transaction.find({
         account: accountId,
@@ -41,30 +32,92 @@ module.exports = {
           },
         ]);
 
-      let cuurentIncome = 0;
-      let currentExpens = 0;
-      let totalBalance = 0;
-      transactionsData.forEach((element) => {
-        if (element.amount > 0) {
-          cuurentIncome += element.amount;
-        } else {
-          currentExpens += Math.abs(element.amount);
-        }
-        totalBalance += element.amount;
-      });
+      const analytics = await AccountAnalytics.findOne({ account: accountId });
 
       const finalData = {
         data: transactionsData,
-        balance: totalBalance.toFixed(2),
-        income: cuurentIncome.toFixed(2),
-        incomePercentageChange: account.incomePercentage.toFixed(2),
-        expensePercentageChange: account.expensesPercentage.toFixed(2),
-        expenses: currentExpens.toFixed(2),
+        balance: analytics.balance.toFixed(2),
+        income: analytics.income.toFixed(2),
+        incomePercentageChange: analytics.incomePercentageChange.toFixed(2),
+        expenses: analytics.expense.toFixed(2),
+        expensePercentageChange: analytics.expensePercentageChange.toFixed(2),
         accountId,
         nameAccount: account.name,
+        owner: account.owner
       };
 
       return res.json(finalData);
+    } catch (error) {
+      console.log(error.message);
+      return res.serverError(error.message);
+    }
+  },
+  getTransactionByDura: async (req, res) => {
+    try {
+      const accountId = req.params.id;
+      // console.log(accountId);
+
+      if (!req.query.filter) {
+        return res.json({
+          message: "Filter is required",
+        });
+      }
+      // console.log(req.query);
+
+      const now = new Date();
+      let startDate;
+      let endDate;
+
+      if (req.query.filter == "Weeks") {
+        let today = new Date();
+
+        // Get the day of the week (0 is Sunday, 1 is Monday, etc.)
+        let dayOfWeek = today.getDay();
+
+        // Calculate the date of the start of the current week
+        let startDate2 = new Date(today);
+        startDate2.setDate(today.getDate() - dayOfWeek);
+
+        // Calculate the date of the end of the current week
+        let endDate2 = new Date(today);
+        endDate2.setDate(today.getDate() - dayOfWeek + 6);
+
+        // Format the dates as strings
+        startDate = startDate2.toDateString();
+        endDate = endDate2.toDateString();
+      }
+      if (req.query.filter == "Months") {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      }
+      if (req.query.filter == "Years") {
+        startDate = new Date(now.getFullYear(), 0, 1);
+        endDate = new Date(now.getFullYear(), 11, 31);
+      }
+      if (req.query.filter == "All") {
+        startDate = new Date(0);
+        endDate = now;
+      }
+
+      const searchQuery = {
+        account: accountId,
+        createdAt: {
+          ">": Date.parse(startDate),
+          "<": Date.parse(endDate),
+        },
+      };
+
+      // console.log(searchQuery);
+      const transactionsData = await Transaction.find(searchQuery)
+        .populate("updatedBy")
+        .populate("category")
+        .sort([
+          {
+            createdAt: "DESC",
+          },
+        ]);
+      // console.log(transactionsData);
+      return res.json(transactionsData);
     } catch (error) {
       console.log(error.message);
       return res.serverError(error.message);
@@ -81,12 +134,12 @@ module.exports = {
   addTrsansaction: async (req, res) => {
     try {
       const tID = req.params.tId;
-      const { text, amount, transfer, category } = req.body;
+      let { text, amount, transfer, category, isIncome } = req.body;
       if (req.body.data) {
         req.body.data.forEach(async (element) => {
           await Transaction.create({
             text: element.text,
-            amount: element.amount,
+            amount: parseFloat(element.amount),
             transfer: element.transfer,
             category: element.category,
             by: req.user.id,
@@ -95,6 +148,14 @@ module.exports = {
           });
         });
         return res.status(201).json({ message: "success" });
+      }
+      amount = parseFloat(amount);
+      const prevoiusAccData = await Accounts.findOne({ id: tID });
+
+      if (isIncome == "false") {
+        if (prevoiusAccData.balance < amount) {
+          return res.status(404).json({ message: "Insufficient Balance" });
+        }
       }
 
       if (!req.user.id) {
@@ -117,54 +178,62 @@ module.exports = {
         by: req.user.id,
         updatedBy: req.user.id,
         account: tID,
+        isIncome,
       });
 
-      const currentIcomeExp = await Transaction.find({
-        account: tID,
+      await Accounts.updateOne({ id: tID }).set({
+        balance:
+          isIncome == "true"
+            ? prevoiusAccData.balance + amount
+            : prevoiusAccData.balance - amount,
       });
 
-      let cuurentIncome = 0;
-      let currentExpens = 0;
-      let totalBalance = 0;
-      currentIcomeExp.forEach((element) => {
-        if (element.amount > 0) {
-          cuurentIncome += element.amount;
+      const accountAnalytics = await AccountAnalytics.findOne({ account: tID });
+
+      if (accountAnalytics) {
+        if (isIncome == "true") {
+          accountAnalytics.incomePercentageChange =
+            accountAnalytics.previousIncome == 0
+              ? 100
+              : ((amount - accountAnalytics.previousIncome) /
+                accountAnalytics.previousIncome) *
+              100;
         } else {
-          currentExpens += Math.abs(element.amount);
+          accountAnalytics.expensePercentageChange =
+            accountAnalytics.previousExpense == 0
+              ? 100
+              : ((amount - accountAnalytics.previousExpense) /
+                accountAnalytics.previousExpense) *
+              100;
         }
-        totalBalance += element.amount;
-      });
-
-      const cuurentBalanceData = await Accounts.findOne({ id: tID });
-      // console.log("====================================");
-      // // console.log(cuurentBalanceData);
-      // console.log("====================================");
-      if (amount > 0) {
-        // console.log("invome update");
-        const incomeChange = calculatePercentageChange(
-          cuurentIncome,
-          cuurentBalanceData.previousIncome
-        );
-
-        await Accounts.updateOne({ id: tID }).set({
-          previousIncome: cuurentIncome,
-          balance: totalBalance,
-          incomePercentage: incomeChange,
+        // console.log(
+        //   accountAnalytics.incomePercentageChange,
+        //   accountAnalytics.expensePercentageChange
+        // );
+        await AccountAnalytics.updateOne({ account: tID }).set({
+          income:
+            isIncome == "true"
+              ? accountAnalytics.income + amount
+              : accountAnalytics.income,
+          expense:
+            isIncome == "false"
+              ? accountAnalytics.expense + amount
+              : accountAnalytics.expense,
+          balance:
+            isIncome == "true"
+              ? accountAnalytics.balance + amount
+              : accountAnalytics.balance - amount,
+          previousIncome:
+            isIncome == "true" ? amount : accountAnalytics.previousIncome,
+          previousExpenses:
+            isIncome == "false" ? amount : accountAnalytics.previousExpenses,
+          previousBalance: accountAnalytics.previousBalance,
+          incomePercentageChange: accountAnalytics.incomePercentageChange,
+          expensePercentageChange: accountAnalytics.expensePercentageChange,
         });
-        return res.status(201).json({ data: newTransactions });
-      } else {
-        const expensesChange = expenssPrCalc(
-          currentExpens,
-          cuurentBalanceData.previousExpenses
-        );
-
-        await Accounts.updateOne({ id: tID }).set({
-          previousExpenses: currentExpens,
-          balance: totalBalance,
-          expensesPercentage: expensesChange,
-        });
-        return res.status(201).json({ data: newTransactions });
       }
+
+      return res.status(201).json({ data: newTransactions });
     } catch (error) {
       console.log(error.message);
       return res.serverError(error.message);
@@ -179,63 +248,82 @@ module.exports = {
         return res.status(404).json({ message: "account id required" });
       }
       const isValid = await Accounts.findOne({ id: tID });
+
       if (!isValid) {
         return res.status(404).json({ message: "account not found" });
       }
+
       if (!dataLength) {
         return res.status(404).json({ message: "qnty field required" });
       }
       const { data } = await generateData(dataLength, tID, currentUser);
       await Transaction.createEach(data);
+      let tempBalance = 0;
 
-      const cuurentBalanceData = await Accounts.findOne({ id: tID });
-      // console.log("====================================");
-      // console.log(cuurentBalanceData);
-      // console.log("====================================");
-      data.forEach(async (element) => {
-        const currentIcomeExp = await Transaction.find({
-          account: tID,
-        });
-
-        let cuurentIncome = 0;
-        let currentExpens = 0;
-        let totalBalance = 0;
-        currentIcomeExp.forEach((element) => {
-          if (element.amount > 0) {
-            cuurentIncome += element.amount;
-          } else {
-            currentExpens += Math.abs(element.amount);
-          }
-          totalBalance += element.amount;
-        });
-
-        if (element.amount > 0) {
-          const incomeChange = calculatePercentageChange(
-            cuurentIncome,
-            cuurentBalanceData.previousIncome
-          );
-
-          await Accounts.updateOne({ id: tID }).set({
-            previousIncome: cuurentIncome,
-            balance: totalBalance,
-            incomePercentage: incomeChange.toFixed(2),
-          });
-        } else {
-          const expensesChange = expenssPrCalc(
-            currentExpens,
-            cuurentBalanceData.previousExpenses
-          );
-
-          // console.log("====================================");
-          // console.log("expense update", expensesChange);
-          // console.log("====================================");
-          await Accounts.updateOne({ id: tID }).set({
-            previousExpenses: currentExpens,
-            balance: totalBalance,
-            expensesPercentage: expensesChange.toFixed(2),
-          });
-        }
+      data.map(async (element) => {
+        tempBalance += element.amount;
       });
+      if (isValid.balance < tempBalance) {
+        await Accounts.updateOne({ id: tID }).set({
+          balance: tempBalance + 2398,
+        });
+        await AccountAnalytics.updateOne({ account: tID }).set({
+          balance: tempBalance + 2398,
+        });
+      }
+      const accountAnalytics2 = await AccountAnalytics.findOne({
+        account: tID,
+      });
+      if (accountAnalytics2) {
+        data.forEach(async (element) => {
+          const accountAnalytics = await AccountAnalytics.findOne({
+            account: tID,
+          });
+          if (element.isIncome) {
+            accountAnalytics.incomePercentageChange =
+              accountAnalytics.previousIncome == 0
+                ? 100
+                : ((element.amount - accountAnalytics.previousIncome) /
+                  accountAnalytics.previousIncome) *
+                100;
+          } else {
+            if (accountAnalytics.balance < element.amount) {
+              console.log("Insufficient Balance");
+            }
+            accountAnalytics.expensePercentageChange =
+              accountAnalytics.previousExpense == 0
+                ? 100
+                : ((element.amount - accountAnalytics.previousExpense) /
+                  accountAnalytics.previousExpense) *
+                100;
+          }
+          await AccountAnalytics.updateOne({ account: tID }).set({
+            income: element.isIncome
+              ? accountAnalytics.income + parseFloat(element.amount)
+              : accountAnalytics.income,
+            expense: !element.isIncome
+              ? accountAnalytics.expense + parseFloat(element.amount)
+              : accountAnalytics.expense,
+            balance: element.isIncome
+              ? accountAnalytics.balance + parseFloat(element.amount)
+              : accountAnalytics.balance - parseFloat(element.amount),
+            previousIncome: element.isIncome
+              ? parseFloat(element.amount)
+              : accountAnalytics.previousIncome,
+            previousExpense: !element.isIncome
+              ? parseFloat(element.amount)
+              : accountAnalytics.previousExpenses,
+            previousBalance: accountAnalytics.previousBalance,
+            incomePercentageChange: accountAnalytics.incomePercentageChange,
+            expensePercentageChange: accountAnalytics.expensePercentageChange,
+          });
+          await Accounts.updateOne({ id: tID }).set({
+            balance: element.isIncome
+              ? accountAnalytics.balance + parseFloat(element.amount)
+              : accountAnalytics.balance - parseFloat(element.amount),
+          });
+        });
+      }
       return res.status(201).json({ message: "success" });
     } catch (error) {
       console.log(error.message);
@@ -303,63 +391,78 @@ module.exports = {
           message: "Transaction id not found",
         });
       }
+
+      const validId = await Transaction.findOne({ id: tId });
       const criteria = { id: tId };
       const values = req.body;
-
+      if (values.amount) {
+        values.amount = parseFloat(values.amount);
+      }
       if (!values) {
         return res.status(404).json({
           message: "Atleast one field required",
         });
+      }
+      if (values.isIncome == "false") {
+        const validBalance = await Accounts.findOne({ id: validId.account });
+        if (validBalance.balance < values.amount) {
+          return res.status(404).json({ message: "Insufficient Balance" });
+        }
       }
       // console.log(criteria, values);
       const updatedTransaction = await Transaction.updateOne(criteria).set({
         ...values,
         updatedBy: req.user.id,
       });
+      const prevoiusAccData = await Accounts.findOne({
+        id: updatedTransaction.account,
+      });
 
-      const currentIcomeExp = await Transaction.find({
+      await Accounts.updateOne({ id: validId.account }).set({
+        balance: updatedTransaction.isIncome
+          ? prevoiusAccData.balance + values.amount
+          : prevoiusAccData.balance - values.amount,
+      });
+
+      const accountAnalytics = await AccountAnalytics.findOne({
         account: updatedTransaction.account,
       });
-
-      let cuurentIncome = 0;
-      let currentExpens = 0;
-      let totalBalance = 0;
-      currentIcomeExp.forEach((element) => {
-        if (element.amount > 0) {
-          cuurentIncome += element.amount;
+      if (accountAnalytics) {
+        if (updatedTransaction.isIncome) {
+          accountAnalytics.incomePercentageChange =
+            ((updatedTransaction.amount - accountAnalytics.previousIncome) /
+              accountAnalytics.previousIncome) *
+            100;
         } else {
-          currentExpens += Math.abs(element.amount);
+          accountAnalytics.expensePercentageChange =
+            ((updatedTransaction.amount - accountAnalytics.previousExpense) /
+              accountAnalytics.previousExpense) *
+            100;
         }
-        totalBalance += element.amount;
-      });
-
-      const cuurentBalanceData = await Accounts.findOne({ id: updatedTransaction.account });
-      if (updatedTransaction.amount > 0) {
-        console.log("invome update");
-        const incomeChange = calculatePercentageChange(
-          cuurentIncome,
-          cuurentBalanceData.previousIncome
-        );
-
-        await Accounts.updateOne({ id: updatedTransaction.account }).set({
-          previousIncome: cuurentIncome,
-          balance: totalBalance,
-          incomePercentage: incomeChange,
+        await AccountAnalytics.updateOne({
+          account: updatedTransaction.account,
+        }).set({
+          income: updatedTransaction.isIncome
+            ? accountAnalytics.income + updatedTransaction.amount
+            : accountAnalytics.income,
+          expense: !updatedTransaction.isIncome
+            ? accountAnalytics.expense + updatedTransaction.amount
+            : accountAnalytics.expense,
+          balance: updatedTransaction.isIncome
+            ? accountAnalytics.balance + updatedTransaction.amount
+            : accountAnalytics.balance - updatedTransaction.amount,
+          previousIncome: updatedTransaction.isIncome
+            ? updatedTransaction.amount
+            : accountAnalytics.previousIncome,
+          previousExpenses: !updatedTransaction.isIncome
+            ? updatedTransaction.amount
+            : accountAnalytics.previousExpenses,
+          previousBalance: accountAnalytics.previousBalance,
+          incomePercentageChange: accountAnalytics.incomePercentageChange,
+          expensePercentageChange: accountAnalytics.expensePercentageChange,
         });
-        return res.json({ data: updatedTransaction });
-      } else {
-        const expensesChange = expenssPrCalc(
-          currentExpens,
-          cuurentBalanceData.previousExpenses
-        );
-
-        await Accounts.updateOne({ id: updatedTransaction.account }).set({
-          previousExpenses: currentExpens,
-          balance: totalBalance,
-          expensesPercentage: expensesChange,
-        });
-        return res.json({ data: updatedTransaction });
       }
+      return res.json({ data: updatedTransaction });
     } catch (error) {
       console.log(error.message);
       return res.serverError(error.message);
@@ -377,8 +480,6 @@ module.exports = {
     try {
       const transId = req.params.delId;
 
-      console.log(transId);
-
       if (!transId) {
         return res.status(404).json({
           message: "Transaction id not found",
@@ -386,33 +487,48 @@ module.exports = {
       }
 
       const isValid = await Transaction.findOne({ id: transId });
-
       if (!isValid) {
         return res.status(404).json({
           message: "Transaction id not valid",
         });
       }
-      await Transaction.destroy({ id: transId });
-      return res.status(200).json({ message: "Transaction deleted" });
-    } catch (error) {
-      console.log(error.message);
-      return res.serverError(error.message);
-    }
-  },
-  rmAllTransaction: async (req, res) => {
-    const accountId = req.params.accId;
-    if (!accountId) {
-      return res.status(404).json({ message: "account not found" });
-    }
-    try {
-      await Transaction.destroy({ account: accountId });
-      await Accounts.updateOne({ id: accountId }).set({
-        previousIncome: 0,
-        previousExpenses: 0,
-        balance: 0,
-        incomePercentage: 0,
-        expensesPercentage: 0,
+      const prevoiusAccData = await Accounts.findOne({ id: isValid.account });
+      const preAnalytics = await AccountAnalytics.findOne({
+        account: isValid.account,
       });
+      let incomePercentageChange;
+      let expensePercentageChange;
+      if (isValid.isIncome) {
+        incomePercentageChange =
+          ((isValid.amount - preAnalytics.previousIncome) /
+            preAnalytics.previousIncome) *
+          100;
+        await AccountAnalytics.updateOne({
+          id: preAnalytics.id,
+        }).set({
+          balance: preAnalytics.balance - isValid.amount,
+          income: preAnalytics.income - isValid.amount,
+          incomePercentageChange:
+            preAnalytics.incomePercentageChange - incomePercentageChange,
+        });
+      } else {
+        expensePercentageChange =
+          ((isValid.amount - preAnalytics.previousExpense) /
+            preAnalytics.previousExpense) *
+          100;
+        await AccountAnalytics.updateOne({
+          id: preAnalytics.id,
+        }).set({
+          balance: preAnalytics.balance - isValid.amount,
+          expense: preAnalytics.expenses - isValid.amount,
+          expensePercentageChange:
+            preAnalytics.expensePercentageChange - expensePercentageChange,
+        });
+      }
+      await Accounts.updateOne({ id: isValid.account }).set({
+        balance: prevoiusAccData.balance - isValid.amount,
+      });
+      await Transaction.destroy({ id: transId });
       return res.status(200).json({ message: "Transaction deleted" });
     } catch (error) {
       console.log(error.message);

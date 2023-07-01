@@ -1,5 +1,5 @@
 /**
- * Accounts.js
+ * AccountAnalytics.js
  *
  * @description :: A model definition represents a database table/collection.
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
@@ -7,23 +7,41 @@
 
 module.exports = {
   attributes: {
-    name: { type: "string", required: true },
-    owner: {
-      model: "User",
-      required: true,
+    account: {
+      model: "Accounts",
     },
-    sharedWith: { type: "json", columnType: "array", defaultsTo: [] },
-    transactions: {
-      collection: "transaction",
-      via: "account",
+    income: {
+      type: "number",
+      defaultsTo: 0
     },
-    analytics: {
-      model: "AccountAnalytics",
+    expense: {
+      type: "number",
+      defaultsTo: 0
     },
     balance: {
       type: "number",
-      defaultsTo: 0,
+    },
+    previousIncome: {
+      type: "number",
+    },
+    previousExpense: {
+      type: "number",
+    },
+    previousBalance: {
+      type: "number",
+    },
+    incomePercentageChange: {
+      type: "number",
+      defaultsTo: 0
+    },
+    expensePercentageChange: {
+      type: "number",
+      defaultsTo: 0
+    },
+    user: {
+      model: "User",
     }
+
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝

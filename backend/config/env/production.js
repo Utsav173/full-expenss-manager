@@ -148,11 +148,9 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
     cors: {
-      allowOrigins: [
-        'https://example.com',
-        'http://localhost:3000',
-        'http://localhost:3001',
-      ]
+      // allowOrigins: [
+      //   'https://example.com',
+      // ]
     },
 
   },
@@ -268,9 +266,8 @@ module.exports = {
     *                                                                          *
     ***************************************************************************/
     onlyAllowOrigins: [
-      'https://example.com',
-      'http://localhost:3000',
-      'http://localhost:3001',
+      'https://expenss-api-wxlz.onrender.com',
+      'https://staging.example.com',
     ],
 
 
@@ -358,7 +355,7 @@ module.exports = {
   * this, just try deploying without setting it and see if it works.)       *
   *                                                                         *
   ***************************************************************************/
-  port: process.env.PORT || 1337,
+  // port: 80,
 
 
 
